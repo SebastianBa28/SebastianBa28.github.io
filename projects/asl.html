@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASL Interpreter Glove · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Texas Science &amp; Engineering Fair (TXSEF)</div>
+      <h1 class="project-hero__title">ASL Interpreter Glove</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <div class="callout">
+        <div class="callout__title">Project Overview</div>
+        <div class="callout__body">
+          Developed a wearable device that interprets ASL gestures and translates them into readable text,
+          assisting hearing-impaired individuals in daily communication.
+          Ultimately competed in the <strong>Texas Science and Engineering Fair (TXSEF).</strong>
+        </div>
+      </div>
+
+      <h2>Initial Iteration</h2>
+      <p>
+        The first iteration consisted of a glove equipped with sensors to collect hand gesture data —
+        finger placement and palm orientation.
+      </p>
+      <ul>
+        <li><strong>Potentiometers</strong> with string-pulley mechanisms determined finger position</li>
+        <li>An <strong>accelerometer/gyroscope</strong> detected hand movement and orientation</li>
+      </ul>
+      <div class="img-grid">
+        <img src="../assets/projects/asl/b4e3a3f7-a406-4eea-86a6-2e860ef20040.png" alt="First glove iteration" />
+        <img src="../assets/projects/asl/b20de6e0-9a2f-4bdc-9d89-10ef0197e4b4.png" alt="Potentiometer layout" />
+      </div>
+
+      <h2>Final Iteration</h2>
+      <p>
+        Due to the mechanical complexity of the first design, we switched to <strong>flex sensors</strong>
+        — more robust and accurate for this application. The gyroscope/accelerometer was retained for
+        hand movement data.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/asl/image.png" alt="Final glove design" />
+        <img src="../assets/projects/asl/image 1.png" alt="Sensor placement" />
+      </div>
+
+      <h2>Demo Videos</h2>
+      <div class="video-wrap">
+        <video controls>
+          <source src="../assets/projects/asl/WhatsApp_Video_2025-10-03_at_12.06.54_PM.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="video-wrap">
+        <video controls>
+          <source src="../assets/projects/asl/WhatsApp_Video_2025-10-03_at_12.08.32_PM.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

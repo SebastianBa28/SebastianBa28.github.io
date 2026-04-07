@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ME 14 — Transmission Competition · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Caltech · ME 14 Design &amp; Fabrication</div>
+      <h1 class="project-hero__title">ME 14 — Transmission Competition</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <div class="callout">
+        <div class="callout__title">Project Description</div>
+        <div class="callout__body">
+          As part of the curriculum for ME 14: Design and Fabrication, we were tasked to design, optimize,
+          and build a <strong>mechanical transmission</strong> to interface a <strong>12V DC motor</strong> and a <strong>bicycle wheel.</strong>
+          The goal was to apply statics and dynamics theory to build the <strong>best performing mechanical gearbox</strong>,
+          practicing CAD, GD&amp;T, and machining along the way.
+        </div>
+      </div>
+
+      <h2>Finished Transmission</h2>
+      <div class="img-full">
+        <img src="../assets/projects/me14/WhatsApp_Image_2024-09-26_at_7.17.38_PM.jpeg" alt="Finished transmission" />
+      </div>
+
+      <h2>Competition Guidelines</h2>
+      <p>
+        The transmission must fit within a <strong>6 × 6 × 8 in</strong> build volume and interface with the test bench
+        mounting features. A tachometer measures speed, acceleration, torque, and power produced.
+        The scoring function balances <strong>fast acceleration</strong> to 250 RPM and <strong>high top speed.</strong>
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/me14/Picture1.jpg" alt="Test bench" />
+        <img src="../assets/projects/me14/Picture2.jpg" alt="Past transmissions" />
+        <img src="../assets/projects/me14/image.png" alt="Scoring function" />
+      </div>
+
+      <h2>Design Overview — Two-Speed Gearbox</h2>
+      <p>
+        To maximize both acceleration and top speed, we designed a <strong>two-speed transmission</strong> using
+        <strong>Roller Clutch Bearings (One-Way Bearings)</strong>. Two bearings in opposite orientations allow
+        distinct gear ratios to engage by reversing the motor direction via a DPDT switch.
+      </p>
+      <ul>
+        <li><strong>First gear (clockwise):</strong> 8:1 ratio — high torque for fast acceleration to 250 RPM</li>
+        <li><strong>Second gear (counter-clockwise):</strong> 4:1 ratio — optimized for maximum top speed</li>
+      </ul>
+      <div class="img-grid">
+        <img src="../assets/projects/me14/image 1.png" alt="One-way bearing concept" />
+        <img src="../assets/projects/me14/image 2.png" alt="Bearing detail" />
+        <img src="../assets/projects/me14/image 3.png" alt="Two-speed layout" />
+        <img src="../assets/projects/me14/image 4.png" alt="Gear arrangement" />
+        <img src="../assets/projects/me14/image 5.png" alt="Input/output concept" />
+      </div>
+
+      <h2>Gear Ratio Selection via MATLAB</h2>
+      <p>
+        A MATLAB script simulated gearbox performance across a range of gear ratios, solving the differential
+        equation of drivetrain dynamics to output max speed and time to 250 RPM.
+        Optimal results: <strong>4:1 for speed</strong>, <strong>8:1 for acceleration</strong> (implemented as 4:1 × 2:1 compound).
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/me14/7c0d5941-1a05-49d0-982c-7fe58720af78.png" alt="MATLAB simulation results" />
+        <img src="../assets/projects/me14/image 6.png" alt="Gear ratio sweep" />
+        <img src="../assets/projects/me14/image 7.png" alt="Final gear layout" />
+        <img src="../assets/projects/me14/image 8.png" alt="Belt drive addition" />
+      </div>
+
+      <h2>SolidWorks Model &amp; GD&amp;T Drawings</h2>
+      <div class="img-grid">
+        <img src="../assets/projects/me14/image 9.png" alt="SolidWorks assembly" />
+        <img src="../assets/projects/me14/image 10.png" alt="Drawing 1" />
+        <img src="../assets/projects/me14/image 11.png" alt="Drawing 2" />
+      </div>
+
+      <h2>Troubleshooting</h2>
+      <p>
+        During assembly we found the Delrin gears were too fragile to bore out for a press fit.
+        We manufactured custom <strong>aluminum hubs</strong> to securely mount the Roller Clutch Bearings.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/me14/image 12.png" alt="Custom hub design" />
+        <img src="../assets/projects/me14/image 13.png" alt="Machined hub" />
+      </div>
+
+      <h2>Finalized Transmission</h2>
+      <div class="img-grid">
+        <img src="../assets/projects/me14/image 14.png" alt="Final assembly 1" />
+        <img src="../assets/projects/me14/image 15.png" alt="Final assembly 2" />
+        <img src="../assets/projects/me14/image 16.png" alt="Final assembly 3" />
+      </div>
+
+      <h2>Competition Day</h2>
+      <div class="yt-embed">
+        <iframe src="https://www.youtube.com/embed/tkUNKEkZriI" allowfullscreen title="Competition Day video"></iframe>
+      </div>
+
+      <h2>Results</h2>
+      <div class="img-grid">
+        <img src="../assets/projects/me14/image 17.png" alt="Results table" />
+        <img src="../assets/projects/me14/image 18.png" alt="Results chart" />
+        <img src="../assets/projects/me14/image 19.png" alt="Leaderboard" />
+        <img src="../assets/projects/me14/image 20.png" alt="Performance data" />
+        <img src="../assets/projects/me14/image 21.png" alt="Speed trace" />
+        <img src="../assets/projects/me14/image 22.png" alt="Final standings" />
+      </div>
+
+      <h2>Engineering Design Notebook</h2>
+      <div class="pdf-embed">
+        <div class="pdf-embed__toolbar">
+          <span class="pdf-embed__title">📄 Engineering Design Notebook</span>
+          <a class="pdf-embed__open" href="../assets/projects/me14/Sebastian_Banuelos_-_Engineering_Design_Notebook.pdf" target="_blank">Open in new tab ↗</a>
+        </div>
+        <iframe class="pdf-embed__frame" src="../assets/projects/me14/Sebastian_Banuelos_-_Engineering_Design_Notebook.pdf" loading="lazy"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+\section{\textbf{Lipschitz Continuity}}
+
+\noindent To show the nonlinear dynamics $\dot{x} = f(x)$ are Lipschitz continuous, consider taking the Jacobian 
+
+\[ Df(x) = \begin{bmatrix}
+    0 & 1 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & A_{2,5} & 0 \\
+    0 & 0 & 0 & 1 & 0 & 0 \\
+    0 & 0 & 0 & 0 & A_{4,5} & 0 \\
+    0 & 0 & 0 & 0 & 0 & 1 \\
+    0 & 0 & 0 & 0 & 0 & 0 \\
+\end{bmatrix} \]
+
+\noindent where
+\[ A_{2,5} = -\frac{(u_1 + u_2)}{m}\cos \theta \]
+
+\[ A_{4,5} = -\frac{(u_1 + u_2)}{m}\sin \theta \]
+
+\noindent Given that $f$ is continuously differentiable, we can conclude it is locally Lipschitz. Thus, we can find a Lipschitz constant such that
+
+\[ ||Df(x)|| \leq L \]
+
+\noindent Given the Lipschitz continuity condition must hold for any norm $||\cdot||$, we take the 2-norm as follows. Let $A = Df(x)$
+
+\[ ||A||_2 = \sqrt{\lambda_{max} (A^\top A)} \]
+
+\noindent Note that
+
+\[ A^T A = \begin{bmatrix}
+0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & \frac{(u_1+u_2)^2}{m^2} & 0 \\
+0 & 0 & 0 & 0 & 0 & 1
+\end{bmatrix} \]
+
+\noindent Given that $A^\top A$ is a diagonal matrix, eigenvalues are the diagonal elements. Hence we have
+
+\[ ||A||_2 = \sqrt{\max\left( 1, \frac{(u_1 + u_2)^2}{m^2}\right)}\]
+
+\noindent Consider the motor limits $u_{max}$ such that $u_1, u_2 \leq u_{max}$. Evaluating at these maximum bounds provides a global Lipschitz constant for the specified domain of inputs:
+
+\[ \begin{aligned}
+    L = ||A||_2 &= \sqrt{\frac{(2 u_{max})^2}{m^2}} \\
+            &= \frac{2 u_{max}}{m}
+\end{aligned} \]

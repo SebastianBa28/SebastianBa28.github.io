@@ -1,0 +1,30 @@
+\section{\textbf{Baseline Controller}}
+
+\noindent Given a desired state and control input along the trajectory $(x_{ref}, u_{ref})$, define the errors
+\[ e = x - x_{ref}\]
+\[ e_u = u - u_{ref} \]
+
+\noindent such that the error dynamics are
+\[ \begin{aligned}
+    \dot{e} &= \dot{x} - \dot{x}_{ref} \\
+    &= f(x, u) - f(x_{ref}, u_{ref}) \\
+    &= f(x_{ref} + e, u_{ref} + e_u) - f(x_{ref}, u_{ref})
+\end{aligned} \]
+
+\noindent Let the function
+\[ g(e, e_u) = f(x_{ref} + e, u_{ref} + e_u) - f(x_{ref}, u_{ref}) \]
+
+\noindent Linearize the error dynamics about $(0,0)$
+\[ g(e, e_u) \approx g(0,0) + \frac{\partial g}{\partial \tilde x} \Bigg|_{0,0} e + \frac{\partial g}{\partial e_u} \Bigg|_{0,0} e_u \]
+
+\noindent Note $g(0,0) = 0$. By the chain rule we have
+\[ \frac{\partial g}{\partial \tilde x} \Bigg|_{0,0} = \frac{\partial f}{\partial x} \Bigg|_{x_{ref}, u_{ref}}
+\quad
+\frac{\partial g}{\partial e_u} \Bigg|_{0,0} = \frac{\partial f}{\partial u} \Bigg|_{x_{ref}, u_{ref}} \]
+
+\noindent Thus, we are left with the linear system
+\[ \dot{e} = Ae + B e_u\]
+
+\noindent The explicit form of $A$ and $B$ are presented in the index. \\
+
+\noindent Finally, consider the control law of the form $u = u_{ref} - ke$ where the gain $k$ is computed as LQR.

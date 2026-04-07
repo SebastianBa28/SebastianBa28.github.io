@@ -1,0 +1,17 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.4cm and 0.4cm]
+
+\node[scan] (input) {Depth\\Frames};
+\node[main, right=of input] (fk) {FK Transform\\to World};
+\node[main, right=of fk] (voxel) {Bayesian\\Voxel Update};
+\node[term, right=of voxel] {3D Occupancy\\Map};
+
+\draw[arr] (input) -- (fk);
+\draw[arr] (fk) -- (voxel);
+\draw[arr] (voxel) -- ++(2.4,0);
+
+\end{tikzpicture}
+\caption{World map construction pipeline. Each depth frame is transformed into world coordinates via the current world--to--depth-camera FK state, then integrated into a sparse voxel grid through four steps: confidence decay on stale voxels, log-odds hit updates, frustum-miss penalties for unobserved voxels in the camera's field of view, and periodic pruning of dead voxels.}
+\label{fig:worldmap}
+\end{figure}

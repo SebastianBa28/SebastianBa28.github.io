@@ -1,0 +1,130 @@
+
+% MAPPING AND RECONSTRUCTION
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.65cm and 3.0cm]
+
+  %─ Left column: overhead camera pipeline ──────────────────────────────────
+  \node[iobox]                    (topcam)   {Overhead Camera};
+  \node[proc1, below=of topcam]   (aruco)    {ArUco Calibration\\Pixel $\leftrightarrow$ World};
+  \node[proc1, below=of aruco]    (detect)   {Colour Filtering \&\\Contour Extraction};
+  \node[proc1, below=of detect]   (temporal) {Temporal Stabilisation};
+
+  %─ Right column: depth camera pipeline ────────────────────────────────────
+  \node[iobox,  right=of topcam]    (deepcam) {Depth Camera};
+  \node[proc2,  below=of deepcam]   (voxel)   {3D Probabilistic\\Voxel Mapping};
+
+  %─ Reconstruction stage ────────────────────────────────────────────────────
+  \node[proc1, below=1.2cm of temporal] (match) {Match Detections\\to Target Grid};
+  \node[proc1, below=of match]          (infer) {Infer Occluded Blocks};
+  \node[iobox, below=of infer]          (out)   {Reconstructed Structure State};
+
+  %─ Arrows ──────────────────────────────────────────────────────────────────
+  \draw[arr] (topcam)   -- (aruco);
+  \draw[arr] (aruco)    -- (detect);
+  \draw[arr] (detect)   -- (temporal);
+  \draw[arr] (temporal) -- (match);
+
+  \draw[arr] (deepcam) -- (voxel);
+  % Depth camera branch joins match from the right via elbow
+  \draw[arr] (voxel.south) -- ++(0,-0.55) |- (match.east);
+
+  \draw[arr] (match) -- (infer);
+  \draw[arr] (infer) -- (out);
+
+\end{tikzpicture}
+\caption{\textbf{Mapping \& Reconstruction.}
+The overhead camera provides pixel-space block detections, calibrated to world coordinates via ArUco markers.  Raw detections are temporally stabilised via DBSCAN clustering, then matched to the target design grid.  Concurrently, the depth camera builds a 3D probabilistic voxel map that assists the matching step.  Blocks hidden beneath visible layers are inferred bottom-up.}
+\label{fig:reconstruction}
+\end{figure}
+
+% STRUCTURE VERIFICATION
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.65cm and 3.0cm]
+
+  %─ Inputs ──────────────────────────────────────────────────────────────────
+  \node[iobox]                       (tdes)   {Target Design};
+  \node[iobox, right=2.5cm of tdes]  (cstate) {Current State};
+
+  % Centre compare below the two inputs
+  \coordinate (mid) at ($(tdes)!0.5!(cstate)$);
+  \node[proc3] (compare) at ($(mid)-(0,1.3)$) {Compare States};
+
+  %─ Main flow ───────────────────────────────────────────────────────────────
+  \node[dec,   below=of compare] (mistake) {Wrong Colour\\Placed?};
+  \node[proc3, below=of mistake] (layer)   {Find Lowest Unplaced Layer};
+  \node[proc3, below=of layer]   (filter)  {Filter: Support Blocks Present};
+  \node[proc3, below=of filter]  (rank)    {Rank Candidates Centre-Outward};
+  \node[proc3, below=of rank]    (smooth)  {Connection Smoothing};
+  \node[proc3, below=of smooth]  (select)  {Select Next Target Cell};
+  \node[iobox, below=of select]  (execute) {Grasp $\to$ Approach $\to$ Place};
+
+  %─ Mistake bypass ──────────────────────────────────────────────────────────
+  \node[proc3, right=2.5cm of mistake] (fix) {Set Misplaced Cell as Target};
+
+  %─ Arrows ──────────────────────────────────────────────────────────────────
+  % Inputs funnel into compare
+  \draw[arr] (tdes.south)   -- ++(0,-0.4) -| (compare.north west);
+  \draw[arr] (cstate.south) -- ++(0,-0.4) -| (compare.north east);
+
+  % Main flow
+  \draw[arr] (compare) -- (mistake);
+  \draw[arr] (mistake) -- node[lbl]{No} (layer);
+  \draw[arr] (layer)   -- (filter);
+  \draw[arr] (filter)  -- (rank);
+  \draw[arr] (rank)    -- (smooth);
+  \draw[arr] (smooth)  -- (select);
+  \draw[arr] (select)  -- (execute);
+
+  % Mistake bypass: skip planning, go straight to select
+  \draw[arr] (mistake)   -- node[lbl,above]{Yes} (fix);
+  \draw[arr] (fix.south) |- (select.east);
+
+\end{tikzpicture}    
+\caption{\textbf{Structure Verification.}
+After each placement the arm repositions overhead to scan the build area. Detected blocks are matched to the target grid by 3D position and colour. If the placement is confirmed correct, the build continues.  Otherwise an orbit scan
+provides additional viewpoints, the misplaced block is identified, and a recovery
+sequence re-grasps and re-places it before scanning again.}
+\label{fig:verification}
+\end{figure}
+
+
+% PLACEMENT PLANNING
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.65cm and 2.6cm]
+
+  %─ Main flow ───────────────────────────────────────────────────────────────
+  \node[iobox]                       (placed)     {Block Placed};
+  \node[proc2, below=of placed]      (movetoscan) {Arm Moves to Scan Position};
+  \node[proc2, below=of movetoscan]  (capture)    {Capture Image \& Depth Data};
+  \node[proc2, below=of capture]     (detectv)    {Detect \& Localise Blocks};
+  \node[proc2, below=of detectv]     (matchv)     {Match to Target Grid};
+  \node[dec,   below=of matchv]      (correct)    {Placement\\Correct?};
+  \node[iobox, below=of correct]     (cont)       {Continue Build};
+
+  %─ Error branch ────────────────────────────────────────────────────────────
+  \node[proc2, right=2.6cm of correct]  (orbit)    {Orbit Scan for Full Coverage};
+  \node[proc2, below=of orbit]          (identify) {Identify Misplaced Block};
+  \node[proc2, below=of identify]       (recover)  {Recovery: Re-grasp \& Re-place};
+
+  %─ Arrows ──────────────────────────────────────────────────────────────────
+  \draw[arr] (placed)      -- (movetoscan);
+  \draw[arr] (movetoscan)  -- (capture);
+  \draw[arr] (capture)     -- (detectv);
+  \draw[arr] (detectv)     -- (matchv);
+  \draw[arr] (matchv)      -- (correct);
+  \draw[arr] (correct)     -- node[lbl]{Yes} (cont);
+  \draw[arr] (correct)     -- node[lbl,above]{No} (orbit);
+  \draw[arr] (orbit)       -- (identify);
+  \draw[arr] (identify)    -- (recover);
+  % Recovery loops back to re-scan
+  \draw[arr] (recover.east) -- ++(0.7,0) |- (movetoscan.east);
+
+\end{tikzpicture}
+\caption{\textbf{Placement Planning.}
+The target design and the reconstructed current state are compared each cycle. If a block of the wrong colour occupies a cell, that cell is immediately targeted for correction, bypassing the normal selection pipeline.  Otherwise the system finds the lowest incomplete layer, filters out cells whose support structure is not yet in place, ranks the remaining candidates from the structure centre outward, applies connection
+smoothing to balance stud-connection counts, and selects the next target cell to place.}
+\label{fig:planning}
+\end{figure}

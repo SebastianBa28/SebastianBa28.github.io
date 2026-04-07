@@ -1,0 +1,86 @@
+\section{ROS Software Architecture}
+
+\noindent The legobuilder software is structured as four cooperating ROS~2 nodes that communicate exclusively through a publish-subscribe topic graph. The four nodes are the Brain, the Manipulator, the Detector, and the IK Solver. Every node additionally participates in a mutual heartbeat protocol, publishing a boolean on its own \texttt{<node>/heartbeat} topic at a fixed rate and monitoring peer heartbeats to detect node failures.
+
+\noindent Figure~\ref{fig:ros_architecture} summarizes the primary inter-node message flows.
+
+\begin{figure}[H]
+\makebox[\textwidth][c]{%
+\begin{tikzpicture}[
+  every node/.style = {font=\small},
+  box/.style = {draw, rounded corners, minimum width=3.5cm, minimum height=1.2cm,
+         align=center, fill=white, thick},
+  hw/.style = {draw, dashed, rounded corners, minimum width=3.5cm,
+         minimum height=0.9cm, align=center, fill=gray!10},
+  arr/.style = {-{Stealth[length=2mm]}, thick},
+]
+
+%% 1. Nodes 
+\node[box, fill=blue!8] (brain) {Brain\\{\footnotesize High Level Control Logic}};
+\node[box, fill=blue!8, right=7.5cm of brain] (ik) {IK Solver};
+\node[box, fill=green!8, below=6.5cm of brain] (manip) {Manipulator\\{\footnotesize 100\,Hz motor control}};
+\node[box, fill=orange!8, right=7.5cm of manip] (det) {Detector\\{\footnotesize vision / 3D map}};
+
+\node[hw, below=2.5cm of manip] (motors) {\texttt{hebiros}\\motor driver};
+\node[hw, below=2.5cm of det]  (cams)  {cameras\\{\footnotesize USB + RealSense}};
+
+%% 2. Brain <-> IK Solver
+\draw[arr] ([yshift=2mm]brain.east) -- node[above, font=\scriptsize, align=center]
+  {\texttt{brain/ik\_request}\\[-1pt]\texttt{z\_calibration\_ready}, \texttt{xy\_calibration\_ready}} ([yshift=2mm]ik.west);
+\draw[arr] ([yshift=-2mm]ik.west) -- node[below, font=\scriptsize]{\texttt{ik\_solver/ik\_response}} ([yshift=-2mm]brain.east);
+
+%% 3. Brain <-> Manipulator 
+\draw[arr] ([xshift=-14mm]brain.south) -- node[left, font=\scriptsize]{\texttt{brain/trajectory\_command}} ([xshift=-14mm]manip.north);
+\draw[arr] ([xshift=-8mm]manip.north) -- node[right, font=\scriptsize, align=left]
+  {\texttt{trajectory\_complete}\\[-1pt]\texttt{contact}\\[-1pt]\texttt{grip\_failure}} ([xshift=-8mm]brain.south);
+
+%% 4. Brain <-> Detector 
+\draw[arr] ([yshift=4mm, xshift=4mm]brain.south east) -- node[above, font=\scriptsize, sloped, align=center, yshift=1mm]
+  {\texttt{worldmap\_scan\_request}\\[-1pt]\texttt{grip\_check\_request}, \texttt{connection\_check\_request}\\[-1pt]\texttt{table\_height\_request}, \texttt{pointcloud\_rebuild}} ([yshift=4mm, xshift=4mm]det.north west);
+\draw[arr] ([yshift=-4mm, xshift=-4mm]det.north west) -- node[below, font=\scriptsize, sloped, align=center, yshift=-1mm]
+  {\texttt{contour\_info}, \texttt{worldmap\_contours}\\[-1pt]\texttt{grip/connection\_check\_response}\\[-1pt]\texttt{table\_height}, \texttt{calibration\_xy}, \texttt{grid\_coords}} ([yshift=-4mm, xshift=-4mm]brain.south east);
+
+%% 5. Manipulator <-> Motors
+\draw[arr] ([xshift=-2mm]manip.south) -- node[left, font=\scriptsize]{\texttt{/joint\_commands}} ([xshift=-2mm]motors.north);
+\draw[arr] ([xshift=2mm]motors.north) -- node[right, font=\scriptsize]{\texttt{/joint\_states}} ([xshift=2mm]manip.south);
+
+%% 6. Cameras -> Detector
+\draw[arr] (cams.north) -- node[right, font=\scriptsize, align=left]{\texttt{/image\_raw}\\[-1pt]\texttt{/ee\_cam/depth/points}} (det.south);
+
+%% 7. joint_states to Brain and Detector 
+\draw[arr, densely dotted] (motors.west) -- ++(-1.0,0) |- node[pos=0.25, left, font=\scriptsize]{\texttt{/joint\_states}} (brain.west);
+\draw[arr, densely dotted] (motors.east) -- ++(2.5,0) |- node[pos=0.25, right, font=\scriptsize]{\texttt{/joint\_states}} ([yshift=3mm]det.south west);
+
+\end{tikzpicture}%
+}
+\caption{ROS~2 topic flows between the four legobuilder nodes and hardware interfaces. All topics are shown verbatim except heartbeats, which are omitted for clarity. Dotted lines indicate that \texttt{/joint\_states} is also consumed by Brain and Detector for forward-kinematics lookups. Brain $\to$ IK Solver calibration signals (\texttt{z\_calibration\_ready}, \texttt{xy\_calibration\_ready}) prompt the solver to reload its offset tables from a stored csv file. The five Brain $\to$ Detector request topics cover world-map scanning, visual grip quality, block connection detection, table-height measurement (Z calibration), and point-cloud cache rebuilding. The Detector responds with contour detections (\texttt{contour\_info}, \texttt{worldmap\_contours}), check responses (\texttt{grip/connection\_check\_response}), and calibration results (\texttt{table\_height}, \texttt{calibration\_xy}, \texttt{grid\_coords}).}
+\label{fig:ros_architecture}
+\end{figure}
+
+\subsection{Brain Node}
+
+\noindent The Brain is the central orchestrator of the system. It hosts the \textbf{build pipeline}---a three-phase state machine (grasp, approach, place) that sequences each block placement. The pipeline is supported by several dedicated subsystems: a \textbf{structure scanner} that manages overhead scans to reconstruct the current build state; a \textbf{block structure} model that maintains a 3D grid representation of the target design and tracks which cells have been filled; a \textbf{calibrator} that runs the XY and Z calibration sequences at startup; and a \textbf{precompute manager} that can speculatively solve IK for the expected next trajectory while the arm is in motion.
+
+\noindent The Brain operates primarily through callbacks rather than a periodic loop. Incoming block detections on \texttt{detector/contour\_info} feed an \textbf{object processor} that temporally buffers and clusters detections using DBSCAN---chosen because it does not require specifying the number of clusters and naturally designates sparse detections as outliers---before publishing stable block positions. When the pipeline is ready to move, it publishes an IK request on \texttt{brain/ik\_request} containing the full set of Cartesian waypoints, tilt and roll angles, and gripper states. On receiving the solved joint angles on \texttt{ik\_solver/ik\_response}, a callback assembles a trajectory command and publishes it to \texttt{brain/trajectory\_command}. The pipeline then waits for a trajectory-complete, contact, or grip-failure message from the Manipulator. A grip failure---the Manipulator detecting via effort that no block was actually gripped---causes the Brain to discard the attempt and re-detect pile blocks. A \textbf{separator} plans trajectories to detach magnetically-connected blocks before grasping. After a successful grasp of a single block, a visual \textbf{grip check} via the Detector classifies grip quality; non-good results trigger recovery strategies (nudging for low/high grips, rotating for diagonal grips).
+
+\noindent Additional subsystems include a \textbf{gesture manager} for idle behaviors (a "chomp" gesture to signal to the user that no blocks are available in the pile, and a "nod" gesture to request human help with unreachable blocks), a \textbf{dashboard client} that posts build-state events to an external web dashboard via fire-and-forget HTTP, and \textbf{reachability analysis} that determines which blocks near the structure can be reached by the gripper without colliding with the existing structure.
+
+\input{final/diagrams/brain_internals}
+
+\subsection{Manipulator Node}
+
+\noindent The Manipulator is the only node with a hard real-time periodic loop. A 100\,Hz timer interpolates the current \textbf{trajectory queue}---an ordered sequence of waypoints, each specifying target joint positions, a movement duration, and optional hold delays. Interpolation uses quintic polynomial splines for smooth position and velocity profiles with zero boundary accelerations. The node applies gravity compensation torques and publishes the result to \texttt{/joint\_commands} for the motor driver. A second publisher sends the same state to \texttt{/joint\_states\_viz} with the gripper position converted to meters for RViz display. Trajectory input arrives asynchronously through a callback on \texttt{brain/trajectory\_command}, which carries an array of waypoints along with a command type (replace, append-front, or append-back) that controls how new waypoints merge with any in-progress motion.
+
+\noindent At each 100\,Hz tick, the Manipulator also compares actual joint states (received on \texttt{/joint\_states}) against the interpolated reference for three checks: \textbf{collision detection}---position, velocity, or effort errors exceeding thresholds proportional to robot speed trigger an immediate contact message; \textbf{grip failure detection}---when the gripper is commanded fully closed, the node checks whether the gripper motor's effort falls below a threshold; if it does, the block was not actually gripped, because a block between the fingers would resist closure and require the motor to exert more effort, so a grip failure message is published; and \textbf{jerk prevention}---large sudden position discrepancies caused by brief HEBI motor connection drops are detected, and the erroneous joint command is suppressed rather than forwarded. After repeated jerk occurrences, the node inserts a smooth recovery waypoint to return the arm to the correct position without abrupt motion.
+
+\subsection{Detector Node}
+
+\noindent The Detector manages two independent perception pipelines. The first is the overhead camera pipeline: whenever a new frame arrives on \texttt{/image\_raw} (published by the camera at roughly 15 FPS with a queue size of one, so stale frames are dropped), a callback runs HSV segmentation, contour extraction, and shape classification to identify blocks. Detected contours are projected into world coordinates and published on \texttt{detector/contour\_info}.
+
+\noindent The second pipeline handles the wrist-mounted RealSense depth camera. Raw point clouds arrive continuously on \texttt{/ee\_cam/depth/points} and are buffered internally. When the Brain issues a scan request on \texttt{brain/worldmap\_scan\_request}, a callback transforms the buffered point cloud into world coordinates using the current arm FK state (tracked via \texttt{/joint\_states}) and integrates it into a probabilistic 3D voxel map. The integrated map is published as a point cloud on \texttt{detector/world\_map}; if the scan type requests block detection, an array of detected contours is also published on \texttt{detector/worldmap\_contours} for the Brain's structure verification logic. The detector node additionally handles request-response interactions for visual grip quality assessment and for connection detection after placement. We should note that the Depth Anything model is hosted on a separate processed which is served to the detector via a FastAPI app. Calibration measurements---table height, XY position, and grid corner coordinates---are handled by the detector node through a similar set of request-triggered callbacks.
+
+\subsection{IK Solver Node}
+
+\noindent The IK Solver exists specifically to offload numerically intensive inverse kinematics computation to a separate OS process, preventing IK solve time from blocking the Brain's callback queue. The node has no periodic control loop; it is entirely event-driven. Each incoming solve request message on \texttt{brain/ik\_request} spawns a background daemon thread that solves IK for all $N$ waypoints in the request, applies pre-computed XY and Z calibration offsets via distance-weighted interpolation, and publishes a response message on \texttt{ik\_solver/ik\_response} carrying the flattened $N \times 6$ joint angle solutions and the original request ID.
+
+\noindent Requests carry a type field distinguishing "primary" requests (needed immediately to execute a motion) from "precompute" requests, which are speculative requests of the expected next trajectory in the robot's nominal flow that will be executed if no recovery behaviours are needed. A primary request will preempt any in-progress precompute thread. The IK Solver also listens for \texttt{brain/z\_calibration\_ready} and \texttt{brain/xy\_calibration\_ready} signals, which prompt it to reload the corresponding offset tables from stored csv files so that subsequent solves immediately reflect the new calibration.

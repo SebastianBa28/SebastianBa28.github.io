@@ -1,0 +1,35 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.5cm and 0.5cm]
+
+% Row 1: compare → wrong color? → mistake removal
+\node[scan] (compare) {Compare\\States};
+\node[dec, right=of compare] (wrong) {Wrong\\color?};
+\node[recov, right=of wrong] (mistake) {Mistake\\Removal};
+
+% Row 2: find layer below the diamond, then filter → rank → select
+\node[main, below=1.2cm of wrong] (layer) {Find Lowest\\Layer};
+\node[main, right=of layer] (filter) {Filter:\\Support Present};
+\node[main, right=of filter] (rank) {Rank\\Centre-Out};
+\node[term, right=of rank] (select) {Select\\Target};
+
+% Row 1 flow
+\draw[arr] (compare) -- (wrong);
+\draw[arr] (wrong) -- node[above,font=\scriptsize]{yes} (mistake);
+
+% Rescan loop: mistake → up and over back to compare (routed well above row 1)
+\draw[darr] (mistake.north) -- ++(0,0.8) -| (compare.north)
+  node[pos=0.25, above, font=\scriptsize]{rescan};
+
+% Wrong color → no → straight down to find lowest layer
+\draw[arr] (wrong) -- node[right,font=\scriptsize]{no} (layer);
+
+% Row 2 flow
+\draw[arr] (layer) -- (filter);
+\draw[arr] (filter) -- (rank);
+\draw[arr] (rank) -- (select);
+
+\end{tikzpicture}
+\caption{Next target selection. After a structure scan, the current build state is compared against the target design. If a wrong-color block occupies a target cell, the system performs a full mistake removal cycle---grasping the misplaced block from the structure, carrying it to the pile, and rescanning---before re-entering the selection logic. Otherwise the system finds the lowest incomplete layer, filters for cells with support, ranks candidates from the centre outward, and selects the next target.}
+\label{fig:target_selection}
+\end{figure}

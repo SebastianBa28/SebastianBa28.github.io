@@ -1,0 +1,32 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.4cm and 0.4cm]
+
+% Row 1: scan → build → detect
+\node[scan] (scan) {Overhead\\Scan};
+\node[main, right=of scan] (wmap) {Build\\World Map};
+\node[main, right=of wmap] (detect) {Detect Blocks\\per Layer};
+
+% Row 2: match → occluded? → state
+\node[main, below=0.8cm of scan] (match) {Match to\\Target Grid};
+\node[dec, right=of match] (occ) {Blocks\\occluded?};
+\node[main, below=0.5cm of occ] (assume) {Assume\\Correct};
+\node[term, right=of occ, xshift=0.3cm] (state) {Current\\Build State};
+
+% Row 1 flow
+\draw[arr] (scan) -- (wmap);
+\draw[arr] (wmap) -- (detect);
+
+% Connect rows: detect wraps down to match
+\draw[arr] (detect.south) -- ++(0,-0.25) -| (match.north);
+
+% Row 2 flow
+\draw[arr] (match) -- (occ);
+\draw[arr] (occ) -- node[above,font=\scriptsize]{no} (state);
+\draw[arr] (occ) -- node[right,font=\scriptsize]{yes} (assume);
+\draw[arr] (assume.east) -| (state.south);
+
+\end{tikzpicture}
+\caption{Structure reconstruction. The arm scans from overhead, integrates depth data into the world map, detects blocks layer by layer, and matches them to the target grid. Blocks hidden beneath visible layers are assumed to be correctly placed.}
+\label{fig:reconstruction}
+\end{figure}

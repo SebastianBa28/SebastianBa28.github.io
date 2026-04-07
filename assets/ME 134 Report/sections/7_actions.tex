@@ -1,0 +1,132 @@
+\section{Action: Normal Behaviors, Failure Recoveries, and other Special Features}
+
+\noindent The system constructs a target block assembly by repeating a perception--plan--act cycle: it scans the structure to determine the current build state, selects the next block to place (either from the disorganized pile or a misplaced block near the structure), grasps it, verifies the grip, carries the block to the target location, and places it. Each iteration of this loop involves a fixed set of named behaviors, organized below by category. Figure~\ref{fig:flow} shows the flow between these behaviors.
+
+
+\subsection{Scan Behaviors}
+
+\paragraph{Structure observation.}
+At the start of each placement cycle---and periodically when no work is available---the arm moves to a fixed overhead position above the build area and dwells there while the top camera accumulates depth and color data. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{final/imgs/scan_view.JPG}
+    \caption{Scanning pose to observe the current state of the structure.}
+    \label{fig:scan_view}
+\end{figure}
+
+
+
+\noindent This data is used to reconstruct a three-dimensional occupancy model of the partially built structure, identifying which cells are already filled and with what color. If the overhead view recovers fewer than half the blocks expected to be visible (typically due to occlusion from tall or overhanging pieces), the arm automatically falls back to an \emph{orbit scan}: it moves sequentially through a ring of side-angle viewpoints surrounding the structure, capturing depth images at each stop. In our final demo configuration, the orbit radius was set to zero, resulting in repeated scans from the same overhead viewpoint; the system is designed to support a nonzero orbit radius for multi-angle coverage. Detections from all viewpoints are pooled and de-duplicated to yield a more complete structural estimate. This scan result determines both the next target cell to fill and whether any placed block is the wrong color.
+
+\input{final/diagrams/target_selection}
+
+\paragraph{Grip check.}
+After every grasp, before the block is transported, the gripper aligns the block directly beneath the end effector camera. Am RGB image of the grip area and held block is captured and sent to an external depth-estimation server. The resulting depth map is analyzed across three regions of interest spanning the two fingers and block. The system classifies the grip into one of five states: \emph{good} (block centered and level between the fingers); \emph{low} (block has slipped too deep, with insufficient protrusion); \emph{high} (block protrudes excessively above the fingers); \emph{diagonal} (block is twisted roughly $45^\circ$ relative to the finger axis); or \emph{partial} (block is gripped well but not perfectly). Any state other than good triggers a recovery action (the Grip Recovery behaviour described below) before the arm proceeds.
+
+\paragraph{Connection check.}
+Following a successful grip check, the arm moves to an inspection pose where the gripper is directly below the top camera, which counts the number of blocks visible in the immediate vicinity of the gripper. The connection check also verifies that the held block's color matches the target cell's expected color, rejecting color mismatches before placement. If only one block is detected, the grasp is clean and the arm proceeds to the target. If two or more blocks appear, one or more extra blocks have been inadvertently lifted by magnetic attraction on accident. In this case the arm discards all blocks into the pile and returns to idle so the blocks can be re-detected in their new positions for the arm to grasp later. Further, if no blocks appear (signaling a failed connection check), the arm discards the block(s) and restarts the grasp phase as it's not confident in the block(s) it may have grasped.
+
+% ------------------------------------------------------------------
+\subsection{Grasping and Manipulation Behaviors}
+% ------------------------------------------------------------------
+
+\paragraph{Block grasping.}
+When a target pile block is selected, the arm approaches it from directly above
+along a vertical descent. The wrist is oriented along the edges of the block that minimize the chance of the gripper fingers bumping into any nearby blocks while descending. The arm descends, closes
+the gripper, and lifts the block clear before proceeding to the grip check.
+
+\paragraph{Block separation.}
+Because the blocks connect magnetically, a block in the pile may be attached to
+one or more neighbors. Simply lifting it would drag those neighbors up with the block. The system detects connected faces each block in the pile is connected to and separates all connected blocks before grabbing the target block.\\
+
+\noindent For a block with a single connection or for a pile block, \emph{in-place
+separation} is used: after lifting the block to a safe height, the wrist tilts
+by $45^\circ$ relative to vertical and the arm lowers slowly, pressing the
+attached neighbor back down against the table. This causes the connected block to be slid off of the target block, yielding just the target block in the grippers fingers. The system will then proceed to a grip check. If a block is not immediately graspable (i.e. it has more than one attached face), then the robot will separate the extra connected blocks from the set one-by-one by grabbing and separating them until the target block has only one connection remaining, then it will grab the target block and separate it from its final connected block and proceed to a grip check. The extra blocks are placed in the most wide open area of the pile -- far from the target block to prevent them from reconnecting.
+
+% NOTE: no need to mention this anymore right? the new logic simply lifts to connection check as that should catch multiple blocks -> drop -> new grasp will trigger separation
+% \noindent If the block is on the structure grid and has multiple connections, lifting it in place risks dropping the detached neighbors onto the structure. Instead, the arm lifts the entire connected group as a unit, carries it laterally over the open pile area, and only then executes the tilt-and-lower separation. Any blocks that detach fall harmlessly into the pile.
+
+\paragraph{Mistake removal.}
+When a structure scan reveals that a block of the wrong color occupies a target cell, the arm treats the misplaced block as a special pickup target: it grasps the block directly from its position on the structure, carries it to the most wide open area of the pile, and sets it down gently. The structure scan is then repeated to reassess the build state before normal placement resumes.
+
+\paragraph{Placement.} Once a block has been grasped, verified, and carried to the target cell, the arm descends to the placement position along a specific vector with the gripper closed, opens the gripper to release the block (pausing briefly to allow the magnetic connection to seat), and retracts upward. The vector of approach is determined as the average of the negative unit normal vectors of the faces the block will be attaching to and a unit vector pointing straight down. This allows the gripper to approach the placement position in a way that minimizes the chance that it interferes with surrounding blocks while also maximizing the chance the block actually connects to the faces that it is intended to connect to. If the block is connecting to more than one face, then the gripper moves to a slightly higher placement position and drops the block into place to prevent the gripper fingers interfering with its neighbor blocks rather than placing it into its spot, which would cause the gripper fingers to bump the block's neighbors.
+
+\noindent The wrist roll during approach and descent is chosen according to which horizontal neighbors of the target cell are already in place, so that the fingers clear any surrounding structure. After each placement the arm performs a structure observation scan to confirm the block is seated correctly before advancing to the next cycle.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{final/imgs/place_view.JPG}
+    \caption{View of the robot placing a block on the structure.}
+    \label{fig:place_view}
+\end{figure}
+
+\paragraph{Grip recovery.} When the grip check returns a non-good classification, the system attempts recovery before proceeding. For a \emph{low}/\emph{high} grip---where the block has slipped too deep or protrudes excessively above the fingers---the arm re-grasps by nudging the pick position radially outward/inward by 10\,mm per retry attempt, biasing the grip higher on the block face. For a \emph{diagonal} or \emph{partial} grip---where the block is misaligned in the fingers---the arm rotates the wrist by $45^\circ$ and re-grasps at the same position, changing which face of the block contacts the fingers. Both strategies are retried up to two times; if the grip remains unacceptable after the maximum retries, the block is released and the arm returns to idle to select a different block.
+
+% ------------------------------------------------------------------
+\subsection{Main Loop Flow}
+% ------------------------------------------------------------------
+
+Figure~\ref{fig:flow} illustrates the full cycle. Normal operation flows
+through the boxes from top to bottom and loops back to idle. Every time the loop restarts, the next target block is determined as the block on the lowest uncompleted structure layer that is closest to the center of the structure and has not been placed yet. This allows us to avoid placing blocks between or below each other, which would risk bumping or interfering with nearby blocks in the structure.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0pt]
+
+% ---- Main column (Compacted vertical spacing) ----
+\node[term] (idle) at (0,  0) {Idle};
+\node[scan] (scan) at (0, -1.3) {Structure\\Scan};
+\node[main] (grasp) at (0, -2.6) {Grasp Block\\(+ Separate)};
+\node[scan] (gchk) at (0, -3.9) {Grip Check};
+\node[dec]  (dgrip) at (0, -5.2) {Grip OK?};
+\node[scan] (cchk) at (0, -6.5) {Connection\\Check};
+\node[dec]  (dconn) at (0, -7.8) {Only one\\block?};
+\node[main] (place) at (0, -9.1) {Approach \&\\Place};
+\node[scan] (ver)   at (0,-10.4) {Verify Scan};
+\node[dec]  (dmist) at (0,-11.7) {Correct\\placement?};
+\node[term] (adv)   at (0,-13.0) {Advance};
+
+% ---- Right column (Pulled in slightly to save horizontal space) ----
+\node[recov] (grec) at (4.5, -5.2) {Grip Recovery\\{\scriptsize re-grasp (2$\times$)}};
+\node[recov] (cdrop) at (4.5,-7.8) {Connection Drop\\{\scriptsize discard, re-detect}};
+\node[recov] (mrem) at (4.5,-11.7) {Mistake Removal\\{\scriptsize pick off, rescan}};
+
+% ---- Main flow ----
+\draw[arr] (idle) -- (scan);
+\draw[arr] (scan) -- (grasp);
+\draw[arr] (grasp) -- (gchk);
+\draw[arr] (gchk) -- (dgrip);
+\draw[arr] (dgrip) -- node[left,font=\scriptsize]{yes} (cchk);
+\draw[arr] (cchk) -- (dconn);
+\draw[arr] (dconn) -- node[left,font=\scriptsize]{yes} (place);
+\draw[arr] (place) -- (ver);
+\draw[arr] (ver)  -- (dmist);
+\draw[arr] (dmist) -- node[left,font=\scriptsize]{yes} (adv);
+
+% Loopback: advance -> idle (Routes up the far left margin)
+\draw[arr] (adv.west) -- ++(-1.5,0) |- (idle.west);
+
+% ---- Branch arrows ----
+% Grip recovery (Local retry loop routing inward)
+\draw[arr] (dgrip.east) -- node[above,font=\scriptsize]{no} (grec.west);
+\draw[arr] (grec.north) -- ++(0,0.4) -| ([xshift=0.5cm]grasp.east) -- (grasp.east)
+  node[pos=0.2, right, font=\scriptsize]{retry};
+
+% Connection drop (Routes cleanly up the RIGHT margin)
+\draw[arr] (dconn.east) -- node[above,font=\scriptsize]{no} (cdrop.west);
+\draw[darr] (cdrop.east) -- ++(0.5,0) |- (idle.east)
+  node[pos=0.25, right, font=\scriptsize]{return to idle};
+
+% Mistake removal (Routes cleanly up the RIGHT margin, further out so it doesn't overlap)
+\draw[arr] (dmist.east) -- node[above,font=\scriptsize]{no} (mrem.west);
+\draw[darr] (mrem.east) -- ++(1.0,0) |- (scan.east)
+  node[pos=0.25, right, font=\scriptsize]{rescan};
+
+\end{tikzpicture}
+\caption{Main build loop. Purple boxes are primary manipulation phases; cyan boxes are scan/sensing phases; red boxes are exception-handling behaviors. After every manipulation phase we have at least one scan/sensing phase to ensure we successfully completed the manipulation phase and to recover if we did not.}
+\label{fig:flow}
+\end{figure}
+
+\newpage

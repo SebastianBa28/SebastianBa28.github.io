@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ME 134 — Block Assembler Robot · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Caltech · ME/CS/EE 134: Robotic Systems · 2026</div>
+      <h1 class="project-hero__title">ME 134 — Block Assembler Robot</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <!-- OVERVIEW -->
+      <div class="callout">
+        <div class="callout__title">Project Overview</div>
+        <div class="callout__body">
+          Autonomous robot that builds any user-specified <strong>3D magnetic block structure</strong> on a 6×6 base grid,
+          driven entirely by a JSON configuration file. The system is <strong>state-invariant and memoryless</strong> —
+          it determines the next corrective action from the current observed state at every cycle, making it robust
+          to arbitrary user interference (adding, removing, or rearranging blocks mid-build).
+          Built in 7 weeks by <strong>Firdavs Nasriddinov, Zachary Pestrikov, and Sebastian Banuelos</strong>
+          for ME/CS/EE 134: Robotic Systems (Prof. Günter Niemeyer, Caltech).
+        </div>
+      </div>
+
+      <!-- DEMO VIDEO -->
+      <h2>Demo Video</h2>
+      <div class="yt-embed">
+        <iframe
+          src="https://drive.google.com/file/d/1Z5a8N6V8IHZS3Czf7M2rwoayD5a_sxi2/preview"
+          allow="autoplay"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <div class="project-demo">
+        <a href="https://docs.google.com/presentation/d/1z6xrhs0PZiR2KbXnW-9BohGcE1yS3LkcOwbhKHGI4iA/edit?usp=sharing" class="btn--project-outline" target="_blank">📊 View Slides ↗</a>
+      </div>
+
+      <!-- HARDWARE -->
+      <h2>Hardware</h2>
+
+      <h3>Arm &amp; Actuators</h3>
+      <p>
+        The manipulator is a <strong>5-DOF arm driven by 6 HEBI motors</strong>, with skeletonized aluminum links
+        (14&Prime; shoulder-to-elbow, 12&Prime; elbow-to-wrist) to minimize mass and inertia.
+        The five degrees of freedom — three Cartesian axes plus wrist tilt and roll — were chosen as the
+        minimum set needed for the task: tilt enables the magnetic separation maneuver and roll aligns the
+        fingers with a block&rsquo;s edges at any orientation.
+      </p>
+
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>Joint</th>
+            <th>Motor</th>
+            <th>Peak (N·m)</th>
+            <th>Continuous (N·m)</th>
+            <th>Max Load (N·m)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Base</td><td>X8-9</td><td>20.0</td><td>8.0</td><td>—</td></tr>
+          <tr><td>Shoulder</td><td>X8-9</td><td>20.0</td><td>8.0</td><td>7.36</td></tr>
+          <tr><td>Elbow</td><td>X5-4</td><td>7.0</td><td>4.0</td><td>2.38</td></tr>
+          <tr><td>Wrist Tilt</td><td>X5-1</td><td>2.5</td><td>1.3</td><td>0.1</td></tr>
+          <tr><td>Wrist Roll</td><td>X5-1</td><td>2.5</td><td>1.3</td><td>—</td></tr>
+          <tr><td>Gripper</td><td>X5-1</td><td>2.5</td><td>1.3</td><td>0.1</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Gripper</h3>
+      <p>
+        Two-finger parallel gripper actuated by a <strong>shoulder-mounted HEBI X5-1</strong> pulling on the fingers
+        via a bicycle cable routed along the arm. Placing the motor proximally reduces distal inertia significantly.
+        Finger opening (~15 mm stroke) is controlled via a radians-to-millimeters mapping. Foam-lined finger
+        faces prevent block slippage during transport and the magnetic separation maneuver.
+      </p>
+
+      <h3>Cameras</h3>
+      <p>
+        The system uses two cameras. A <strong>Logitech webcam</strong> is mounted in a fixed elevated position
+        for a top-down workspace view — used for pile detection and multi-block connection checks.
+        An <strong>Intel RealSense D435i</strong> depth camera is mounted at the wrist above the gripper,
+        oriented vertically — used for structure state reconstruction via point clouds and for Z calibration.
+      </p>
+
+      <div class="img-grid">
+        <img src="../assets/projects/me134/side_view.jpg" alt="Robot side view" />
+        <img src="../assets/projects/me134/top_view.jpg" alt="Robot top view" />
+      </div>
+
+      <!-- KINEMATICS & CONTROL -->
+      <h2>Kinematics &amp; Control</h2>
+
+      <h3>Task Space</h3>
+      <p>
+        The task space is 5-dimensional: <strong>(x, y, z, θ<sub>tilt</sub>, θ<sub>roll</sub>)</strong> —
+        three Cartesian coordinates of the gripper tip plus gripper tilt angle relative to the table and
+        roll angle when facing down. Tilt is measured from facing away from the table (0 rad = parallel
+        to table, −π = facing toward it). Roll is relevant only when the gripper approaches blocks from above.
+      </p>
+
+      <h3>Jacobian &amp; Inverse Kinematics</h3>
+      <p>
+        The angular Jacobian rows for tilt and roll are derived analytically from joint coupling:
+      </p>
+      <div class="code-block"><span class="comment">// Tilt and Roll Jacobian rows (appended below Cartesian J)</span>
+<span class="accent">J_tilt</span>  = [  0,  1, -1,  1,  0 ]   <span class="comment">// base, shoulder, elbow, wrist-tilt, wrist-roll</span>
+<span class="accent">J_roll</span>  = [ -1,  0,  0,  0,  1 ]
+
+<span class="comment">// Wrist roll is solved analytically after NR:</span>
+<span class="accent">q_wrist_roll</span> = θ_roll_desired + q_base</div>
+      <p>
+        Inverse kinematics is solved with <strong>Newton-Raphson iteration</strong> on the 4-DOF task
+        (x, y, z, θ<sub>tilt</sub>), using a <strong>damped pseudoinverse via SVD</strong> — singular values
+        below a threshold γ are regularized to avoid numerical instability near kinematic singularities.
+        Joint limits are enforced at every iteration. All initial guesses start from an <strong>elbow-up
+        configuration</strong> to prevent elbow-table collisions.
+      </p>
+
+      <h3>Trajectories</h3>
+      <p>
+        Arm motion is governed by a <strong>trajectory queue</strong> of ordered waypoints. The Manipulator
+        node interpolates between consecutive waypoints using <strong>quintic polynomial splines</strong>,
+        guaranteeing continuous position and velocity with zero boundary accelerations for smooth motion.
+        The Brain sends trajectory commands with a type field — <code>replace</code>, <code>append-front</code>,
+        or <code>append-back</code> — enabling complex multi-step maneuvers (grasp → lift → separate → grip-check →
+        approach → place) to be chained as a continuous trajectory without stopping.
+      </p>
+
+      <h3>Gravity Compensation</h3>
+      <p>
+        A static multi-body torque model cancels gravitational loading at the shoulder, elbow, and wrist-tilt
+        joints. Per-joint moment coefficients aggregate link mass and total distal mass:
+      </p>
+      <div class="code-block"><span class="comment">// Moment coefficient for joint i</span>
+<span class="accent">C_i</span> = g · (m_i · d_i  +  W_distal · L_i)
+
+<span class="comment">// Recursive gravitational torques (wrist → elbow → shoulder)</span>
+<span class="accent">τ_g,w</span> = C₃ · sin(θ₁₂₃)
+<span class="accent">τ_g,e</span> = C₂ · sin(θ₁₂) + τ_g,w
+<span class="accent">τ_g,s</span> = C₁ · sin(θ₁)  + τ_g,e
+
+<span class="comment">// Commanded motor torque (d_i = direction sign)</span>
+<span class="accent">τ_motor,i</span> = −d_i · τ_g,i</div>
+
+      <h3>Calibration Error Maps</h3>
+      <p>
+        Systematic FK errors (mainly from imperfect gravity compensation growing with arm extension) are
+        corrected via two calibration maps loaded as CSV at startup:
+      </p>
+      <ul>
+        <li><strong>XY error map</strong> — robot moves to a grid of positions, top camera detects a blue marker on the camera mount and stores the offset between commanded and actual tip position. A vector field of these offsets is interpolated and applied to task coordinates before each IK solve.</li>
+        <li><strong>Z error map</strong> — robot sweeps radially at multiple heights while the RealSense measures actual table height, capturing how gravity compensation error grows with radial extension. Applied as a Z offset per IK solve.</li>
+      </ul>
+      <div class="img-grid">
+        <img src="../assets/projects/me134/xy_error.png" alt="XY error vector field" />
+        <img src="../assets/projects/me134/z_error.png" alt="Z table height error map" />
+      </div>
+
+      <h3>Motion Detectors</h3>
+      <p>
+        Three real-time safety monitors run at 100 Hz in the Manipulator node:
+      </p>
+      <ul>
+        <li><strong>Collision detection</strong> — position, velocity, and effort errors above a speed-proportional threshold trigger an immediate contact event.</li>
+        <li><strong>Grip failure detection</strong> — when the gripper is commanded fully closed, low motor effort signals that no block is between the fingers (an actual block resists closure, requiring higher effort).</li>
+        <li><strong>Jerk prevention</strong> — large sudden position discrepancies caused by brief HEBI motor connection drops are detected and the erroneous command is suppressed. After repeated events, a smooth recovery waypoint is inserted to return the arm to the correct state.</li>
+      </ul>
+
+      <!-- PERCEPTION -->
+      <h2>Perception System</h2>
+
+      <h3>Camera Calibration</h3>
+      <p>
+        <strong>ArUco markers</strong> at the four corners of the workspace provide an affine pixel-to-world
+        transform for the overhead camera, refreshed every 100 seconds in case the table shifts.
+        XY and Z calibration procedures (described in the Kinematics section) run automatically at startup
+        and write offset CSV files that the IK Solver reloads on demand. A separate <strong>placement grid
+        calibration</strong> re-detects the 6×6 base grid corners through the same camera pipeline, ensuring
+        that kinematics error correction and grid registration share the same coordinate frame.
+      </p>
+
+      <h3>Pile Block Detection</h3>
+      <p>
+        Blocks in the disorganized pile are detected by the overhead Logitech camera using a custom pipeline:
+      </p>
+      <ul>
+        <li><strong>HSV segmentation</strong> — per-color HSV bounds filter the image to isolate each block color.</li>
+        <li><strong>Edge-aligned bounding box</strong> — OpenCV contours are rotated to align with the longest detected edge, an axis-aligned bounding box is computed, then rotated back — giving a tight, rotation-aware bounding rectangle.</li>
+        <li><strong>Rectangle splitting algorithm</strong> — large rectangles (≥2 block lengths) are subdivided into a grid of block-sized cells. Each cell is tested for occupancy and adjacency, producing a map of which block faces are magnetically connected.</li>
+      </ul>
+
+      <h3>Structure Reconstruction — Bayesian Voxel Occupancy Map</h3>
+      <p>
+        The 3D structure state is maintained in a <strong>sparse Bayesian voxel grid</strong> keyed by integer
+        (ix, iy, iz) tuples. Each voxel stores log-odds occupancy, observation count, last-seen scan index,
+        and RGB color. Every scan from the wrist RealSense runs four sequential update passes:
+      </p>
+      <div class="voxel-steps">
+        <div class="voxel-step">
+          <div class="voxel-step__num">Step 1</div>
+          <div class="voxel-step__title">Decay</div>
+          <div class="voxel-step__desc">Multiplicative confidence decay on stale positive log-odds — old observations fade over time.</div>
+        </div>
+        <div class="voxel-step">
+          <div class="voxel-step__num">Step 2</div>
+          <div class="voxel-step__title">Hit Update</div>
+          <div class="voxel-step__desc">Log-odds addition for observed voxels, clamped to [L_MIN, L_MAX] with observation count cap.</div>
+        </div>
+        <div class="voxel-step">
+          <div class="voxel-step__num">Step 3</div>
+          <div class="voxel-step__title">Frustum Miss</div>
+          <div class="voxel-step__desc">Penalty applied to high-confidence voxels inside the camera FOV that were not observed this scan.</div>
+        </div>
+        <div class="voxel-step">
+          <div class="voxel-step__num">Step 4</div>
+          <div class="voxel-step__title">Pruning</div>
+          <div class="voxel-step__desc">Periodic garbage collection removes dead voxels near L_MIN, keeping the sparse grid compact.</div>
+        </div>
+      </div>
+      <p>
+        After integrating scans, the system queries the map layer-by-layer (one layer per block height),
+        detects blocks in each layer using the same contour algorithm as pile detection, and matches them
+        to target grid cells. Blocks hidden beneath visible layers are assumed correctly placed (conservative
+        occlusion assumption). The result is the current build state used to select the next block to place.
+      </p>
+
+      <div class="img-grid">
+        <img src="../assets/projects/me134/scan_view.jpg" alt="Overhead scan pose" />
+        <img src="../assets/projects/me134/place_view.jpg" alt="Robot placing a block" />
+      </div>
+
+      <h3>Temporal Buffering with DBSCAN</h3>
+      <p>
+        To prevent acting on momentarily-visible or still-moving blocks, the Brain maintains a
+        <strong>pile detection buffer</strong> over a rolling ~2-second window.
+        <strong>DBSCAN</strong> clusters detections spatially (chosen because it requires no cluster count
+        and designates sparse detections as outliers automatically). A block is published as stable only if
+        its cluster position variance is under 2 cm and it has been consistently detected for the full buffer
+        duration — preventing premature grasps.
+      </p>
+
+      <h3>Depth Anything V2 — Grip Quality Classification</h3>
+      <p>
+        After every grasp, the system must verify grip quality. The RealSense depth sensor cannot be used
+        directly — the gripped block falls within its minimum supported depth range. Instead:
+      </p>
+      <ul>
+        <li>An RGB image of the grip area is captured from the wrist camera.</li>
+        <li><strong>Depth Anything V2 Base</strong> (97M parameters) infers a relative depth map, served via a standalone <strong>FastAPI server</strong> to avoid blocking the Detector&rsquo;s ROS callback pipeline.</li>
+        <li>Three regions of interest spanning the two fingers and block face are analyzed to classify grip state into one of five classes: <strong>good / low / high / diagonal / partial</strong>.</li>
+        <li>Any non-good result triggers a targeted recovery before the arm proceeds to the target cell.</li>
+      </ul>
+      <p>
+        The Base model was selected over Small (25M) and Large (335M) variants after comparing spatial
+        resolution versus inference time across all grip states:
+      </p>
+      <div class="img-full">
+        <img src="../assets/projects/me134/depth_anything.jpg" alt="Depth Anything V2 grip state comparison" />
+      </div>
+
+      <!-- ROS 2 ARCHITECTURE -->
+      <h2>ROS 2 Software Architecture</h2>
+      <p>
+        The software is structured as <strong>four cooperating ROS 2 nodes</strong> communicating exclusively
+        via publish-subscribe topics. Every node participates in a mutual <strong>heartbeat protocol</strong> —
+        each publishes a boolean on its own <code>&lt;node&gt;/heartbeat</code> topic at a fixed rate and monitors
+        peer heartbeats to detect node failures.
+      </p>
+
+      <div class="node-grid">
+        <div class="node-card node-card--brain">
+          <div class="node-card__name">Brain</div>
+          <div class="node-card__title">Central Orchestrator</div>
+          <div class="node-card__desc">
+            Hosts the build pipeline state machine, structure scanner, 3D block grid model, startup calibrator,
+            speculative IK precompute manager, DBSCAN object processor, separator, gesture manager
+            (chomp / nod), and reachability analyzer.
+          </div>
+        </div>
+        <div class="node-card node-card--manip">
+          <div class="node-card__name">Manipulator</div>
+          <div class="node-card__title">100 Hz Real-Time Loop</div>
+          <div class="node-card__desc">
+            Quintic spline interpolation of trajectory queue, gravity compensation torque output,
+            and three safety monitors: collision detection, grip failure detection, and jerk prevention.
+          </div>
+        </div>
+        <div class="node-card node-card--detect">
+          <div class="node-card__name">Detector</div>
+          <div class="node-card__title">Vision &amp; 3D Map</div>
+          <div class="node-card__desc">
+            Two pipelines: overhead camera (HSV → contours, ~15 FPS) and RealSense point cloud
+            (Bayesian voxel map integration, triggered by Brain scan requests). Handles grip quality,
+            connection checks, and calibration measurements.
+          </div>
+        </div>
+        <div class="node-card node-card--ik">
+          <div class="node-card__name">IK Solver</div>
+          <div class="node-card__title">Offloaded Newton-Raphson</div>
+          <div class="node-card__desc">
+            Separate OS process preventing IK compute from blocking the Brain&rsquo;s callback queue.
+            Event-driven: each request spawns a daemon thread solving N waypoints and returning N×6
+            joint angles. Supports primary (immediate) vs. precompute (speculative) request types.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        The Brain uses <strong>speculative IK precomputation</strong> — while the arm is executing the current
+        trajectory, it issues a precompute request for the expected next trajectory. A primary request
+        (needed immediately) preempts any in-progress precompute thread, minimizing idle wait time.
+      </p>
+
+      <div class="img-full">
+        <img src="../assets/projects/me134/dashboard.png" alt="Real-time build dashboard" />
+      </div>
+      <p style="font-size:.85rem; color:var(--color-muted); margin-top:-8px;">
+        Real-time web dashboard served via FastAPI with Three.js 3D structure rendering, build phase indicators,
+        block placement statistics, event log, and per-node health indicators. Connected browsers receive live
+        updates via Server-Sent Events (SSE).
+      </p>
+
+      <!-- BUILD PIPELINE -->
+      <h2>Build Pipeline &amp; Behaviors</h2>
+      <p>
+        The system repeats a <strong>perception–plan–act cycle</strong>, selecting and placing one block per
+        iteration. Each iteration selects the next unfilled cell on the lowest incomplete layer closest to
+        the structure center — building outward and upward to avoid placing blocks between or below others.
+      </p>
+
+      <div class="pipeline">
+        <div class="pipeline__step pipeline__step--scan">
+          <div class="pipeline__label">Structure Scan</div>
+          <div class="pipeline__desc">Arm moves overhead; RealSense integrates point clouds into the Bayesian voxel map to reconstruct current build state and select the next target cell.</div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__label">Grasp + Separate</div>
+          <div class="pipeline__desc">Target pile block is approached from above. If magnetically connected to neighbors, in-place separation maneuver: tilt wrist 45° and lower — attached block slides off. Multi-connected blocks are separated one-by-one before the target is grasped.</div>
+        </div>
+        <div class="pipeline__step pipeline__step--scan">
+          <div class="pipeline__label">Grip Check</div>
+          <div class="pipeline__desc">Arm aligns block beneath wrist camera. Depth Anything V2 classifies grip state (good / low / high / diagonal / partial).</div>
+        </div>
+        <div class="pipeline__step pipeline__step--recover">
+          <div class="pipeline__label">Grip Recovery (if needed)</div>
+          <div class="pipeline__desc">Low/High → nudge pick position ±10 mm radially and re-grasp. Diagonal/Partial → rotate wrist 45° and re-grasp. Up to 2 retries; if still failing, block is released and a different block is selected.</div>
+        </div>
+        <div class="pipeline__step pipeline__step--scan">
+          <div class="pipeline__label">Connection Check</div>
+          <div class="pipeline__desc">Arm moves block under the overhead camera. Counts detected blocks and verifies color match. Two or more blocks → Connection Drop (discard all, return to idle). Zero blocks → re-detect and retry.</div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__label">Approach &amp; Place</div>
+          <div class="pipeline__desc">Approach vector = average of negative face-normal unit vectors of target faces + downward unit vector, minimizing interference with surrounding blocks. For multi-face connections, block is dropped from slightly above to avoid finger collisions. Wrist roll is selected to clear existing neighbors.</div>
+        </div>
+        <div class="pipeline__step pipeline__step--scan">
+          <div class="pipeline__label">Verify Scan</div>
+          <div class="pipeline__desc">Structure is re-scanned to confirm correct placement. If the wrong color occupies the target cell, Mistake Removal is triggered.</div>
+        </div>
+        <div class="pipeline__step pipeline__step--recover">
+          <div class="pipeline__label">Mistake Removal (if needed)</div>
+          <div class="pipeline__desc">Arm grasps the misplaced block directly from the structure, carries it to the widest open area of the pile, and sets it down. Structure is rescanned before normal placement resumes.</div>
+        </div>
+        <div class="pipeline__step pipeline__step--end">
+          <div class="pipeline__label">Advance</div>
+          <div class="pipeline__desc">Block is marked as placed in the 3D grid model. Loop restarts for the next target cell.</div>
+        </div>
+      </div>
+
+      <p>
+        Additional behaviors: a <strong>chomp gesture</strong> signals that no pile blocks are available;
+        a <strong>nod gesture</strong> requests human assistance for blocks the reachability analyzer
+        has determined are outside the arm&rsquo;s accessible workspace.
+      </p>
+
+      <!-- AI DESIGN AGENT -->
+      <h2>AI Structure Design Agent</h2>
+      <p>
+        To make the system accessible, we built a <strong>conversational AI agent</strong> using the
+        Google Agent Development Kit (ADK) powered by <strong>Gemini 2.5 Flash</strong>. Users describe
+        a desired structure in natural language (e.g., &ldquo;build a flower&rdquo; or &ldquo;make a 3-layer pyramid&rdquo;)
+        and the agent iteratively generates, validates, and refines the JSON assembly file.
+        The agent has access to seven tools: assembly constraint lookup, block inventory count,
+        list/load saved assemblies, JSON validation (checking 8 rules including grid bounds,
+        cantilever limits, and reachability), ASCII layer-by-layer visualization, and disk save.
+      </p>
+      <p>The generated JSON format specifies each block by color and (x, y, z) grid position:</p>
+      <div class="code-block">{ <span class="accent">"metadata"</span>: { "title": "Flower", "gridSize": { "length": 8, "width": 8, "height": 8 }, "totalBlocks": 23 },
+  <span class="accent">"blocks"</span>: [
+    { "id": 4,  "color": <span class="accent">"green"</span>,  "position": { "x": 4, "y": 4, "z": 1 } },
+    { "id": 5,  "color": <span class="accent">"green"</span>,  "position": { "x": 3, "y": 4, "z": 1 } },
+    { "id": 10, "color": <span class="accent">"red"</span>,    "position": { "x": 3, "y": 4, "z": 2 } },
+    { "id": 14, "color": <span class="accent">"yellow"</span>, "position": { "x": 2, "y": 4, "z": 2 } },
+    <span class="comment">// ... 19 more blocks</span>
+  ]
+}</div>
+
+      <!-- SHORTCOMINGS -->
+      <h2>Shortcomings &amp; Lessons Learned</h2>
+      <p>The system is highly robust but has five primary limitations, each with a mitigation strategy:</p>
+      <ul>
+        <li>
+          <strong>N×M block clusters (N,M &gt; 2)</strong> — the arm cannot separate large fused clusters because it cannot grasp any block within them. Mitigation: unreachable clusters are detected and ignored; the arm signals for human help via the nod gesture.
+        </li>
+        <li>
+          <strong>Rare structure bumps</strong> — the arm may contact the structure in unusual configurations. Mitigation: build order is outward and upward, maximizing clearance; collision detection triggers immediate stop and recovery.
+        </li>
+        <li>
+          <strong>Motor connection drops</strong> — brief HEBI disconnects cause sudden positional jerks. Mitigation: jerk prevention suppresses erroneous commands and inserts smooth recovery waypoints; a &ldquo;catching&rdquo; behavior restarts the trajectory from the true joint state rather than forcing a catch-up jump.
+        </li>
+        <li>
+          <strong>Edge-case misplaced blocks</strong> — some block positions (inside N×N connections or at workspace boundaries) cannot be grasped. Mitigation: reachability analysis marks these as inaccessible and the nod gesture requests human intervention.
+        </li>
+        <li>
+          <strong>No online learning</strong> — the system cannot adapt kinematics or detection errors discovered during a run without a recalibration. Mitigation: the online calibration phase at startup produces error maps that significantly reduce systematic errors. Fully learned policies via RL were considered but deemed higher risk for the 7-week timeline.
+        </li>
+      </ul>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+\section{\textbf{Region of Attraction}}
+\noindent We provide an inner approximation of the region of attraction using the constructive method of Theorem 8.3. By the mean value theorem, the closed-loop nonlinear dynamics admit the decomposition
+\[ \dot{e} = A_{cl}e + G(e)e\]
+
+\[ G(e) = \int_0^1 Df_{cl}(\tau e)\,d\tau - Df_{cl}(0) \]
+\noindent where $Df_{cl}$ is the Jacobian of the closed-loop dynamics $f_{cl}(e) = f(x_0 + e,\, u_0 - Ke)$. By Theorem 8.3, exponential stability holds on the ball $B_r(0)$ provided
+\[ N \triangleq \max_{\|e\| \leq r} \left\| \int_0^1 Df_{cl}(\tau e)\,d\tau - Df_{cl}(0) \right\| < \frac{\lambda_{\min}(Q)}{2\lambda_{\max}(P)} \]
+\noindent We compute $N$ by solving the constrained optimization problem
+\[ \max_{e} \quad \|G(e)\| \quad \text{subject to} \quad \|e\|^2 \leq r^2 \]
+\noindent where the integral is evaluated via approximated numerically and the maximization is performed using multi-start \texttt{fmincon}. A bisection search over $r$ yields the critical radius $r^*$ at which the bound is saturated. With $Q = I_6$, we obtain
+\[ \frac{\lambda_{\min}(Q)}{2\lambda_{\max}(P)} = \frac{1}{2\lambda_{\max}(P)} \]
+\noindent We define the inner approximation of the Region of Attraction as the ellipsoid
+\[ \Omega_\beta = \{ e \in \mathbb{R}^6 : e^\top P e \leq \beta \}, \quad \beta = \lambda_{\min}(P)\, r^{*2} \]
+\noindent Implementing the program describe above we obtain
+\[r^* \approx 5 \times 10^{-3} \]

@@ -1,0 +1,68 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.6cm and 0.8cm,
+  periph/.style={rectangle, draw=black!40, fill=gray!10, rounded corners=3pt,
+                 text width=1.9cm, align=center, minimum height=7mm,
+                 font=\scriptsize\sffamily}]
+
+% ── Core subsystems ──────────────────────────────────────────────────────
+
+% Row 1: Calibrator and Object Processor
+\node[term] (calib) {Calibrator\\{\scriptsize (startup)}};
+\node[scan, right=2.0cm of calib] (objproc) {Object\\Processor};
+
+% Row 2: Scanner — Pipeline — Recovery / Separator stacked
+\node[scan, below=0.8cm of calib] (scanner) {Structure\\Scanner};
+\node[main, right=1.8cm of scanner, text width=3.6cm] (pipeline)
+     {Build Pipeline\\{\scriptsize grasp $\to$ approach $\to$ place}};
+\node[recov, right=2.0cm of pipeline, yshift=4mm] (recovery) {Recovery};
+\node[main, right=2.0cm of pipeline, yshift=-6mm, text width=2.0cm] (separator) {Separator};
+
+% Row 3: Peripherals
+\node[periph, below=1.8cm of scanner, xshift=0.5cm] (gesture) {Gesture\\Manager};
+\node[periph, right=0.3cm of gesture] (dash) {Dashboard\\{\scriptsize (all events)}};
+\node[periph, right=0.3cm of dash] (reach) {Reachability\\Analyzer};
+
+% ── Dashed orchestrator box (background layer, label at top) ────────────
+\begin{scope}[on background layer]
+  \node[draw=black!50, dashed, rounded corners=6pt,
+        inner xsep=14pt, inner ysep=16pt,
+        fit=(calib)(objproc)(scanner)(pipeline)(recovery)(separator)(gesture)(dash)(reach),
+        label={[font=\small\sffamily\bfseries]above:
+               Orchestrator (BrainNode)}] {};
+\end{scope}
+
+% ── Core arrows ──────────────────────────────────────────────────────────
+
+% Calibrator → Scanner
+\draw[arr] (calib) -- (scanner);
+
+% Object Processor → Build Pipeline
+\draw[arr] (objproc) -- node[right,font=\scriptsize]{pile detections} (pipeline);
+
+% Structure Scanner ↔ Build Pipeline (offset to avoid overlap)
+\draw[arr] ([yshift=3mm]scanner.east) --
+  node[above,font=\scriptsize]{next target} ([yshift=3mm]pipeline.west);
+\draw[arr] ([yshift=-3mm]pipeline.west) --
+  node[below,font=\scriptsize]{verify} ([yshift=-3mm]scanner.east);
+
+% Build Pipeline → Recovery (failure)
+\draw[arr] ([yshift=2mm]pipeline.east) --
+  node[above,font=\scriptsize]{failure} (recovery.west);
+
+% Build Pipeline → Separator (pre-grasp)
+\draw[arr] ([yshift=-4mm, xshift=-4mm]pipeline.east) --
+  node[below,font=\scriptsize]{connected blocks} (separator.west);
+
+% Recovery → Scanner (rescan, routed below)
+\draw[darr] (recovery.north) -- ++(0,0.4) -|
+  node[pos=0.25,above,font=\scriptsize]{rescan} (scanner.north);
+
+% ── Peripheral arrows ───────────────────────────────────────────────────
+\draw[arr, thin, black!50] (pipeline.south) -- ++(0,-0.5) -| (gesture);
+\draw[arr, thin, black!50] ([xshift=3mm]scanner.south) -- ++(0,-1.2) -| (reach);
+
+\end{tikzpicture}
+\caption{Brain node internal architecture. The Orchestrator (the \texttt{BrainNode} class) manages all subsystems. The calibrator runs at startup before the main loop begins. The build pipeline orchestrates each placement cycle, receiving pile detections from the object processor and the next target from the structure scanner. The separator detaches magnetically-connected blocks before grasping; on failure, recovery is invoked before rescanning. The gesture manager signals idle states to the user, the dashboard receives events from all subsystems, and the reachability analyzer informs the structure scanner which blocks near the structure are accessible.}
+\label{fig:brain_internals}
+\end{figure}

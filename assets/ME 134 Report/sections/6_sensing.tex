@@ -1,0 +1,29 @@
+\section{Sensing/Thinking: Modeling/Understanding the World}
+
+\subsection{Buffering Top Camera Detections}
+
+In order to accurately detect objects from the pile, the brain keeps track of "pile detection buffer", which stores every block detection in the pile over the past $t_{buffer}$ seconds ($t_{buffer}$ is a constant in the code, which is typically set to approximately 2 seconds). We then perform a clustering algorithm (using scikit-learn implementation of DBSCAN, which groups dense data points and designates sparse points as outliers and doesn't require specifying the number of clusters) on the detections stored in the buffer to determine which detections are of the same object. If and only if the average distance between the detections of the block's position and the average position of the detections is within a certain tolerance (approximately 2 cm) and we have consistently detected the block for the duration of the buffer, then we consider those detections to correspond to an actual detected block that the robot can use, where the position and orientation of that block is the average of all the positions and orientations detected in the buffer. 
+
+\noindent This buffering algorithm prevents our system from prematurely publishing the position of an object if it is still moving or only in the frame for a brief moment, and requires that the object be stationary and in the frame for $t_{buffer}$ seconds.
+
+\input{diagrams/buffering}
+
+\subsection{World Map Construction}
+In order to construct an accurate representation of the world the brain combines point clouds detected from the end effector camera into a robust world map. As we traverse the workspace gathering depth information we construct a 3D world reconstruction, which gives us the ability to actually determine the location of blocks within the structure, which is 3D. 
+
+\noindent It works via an implementation of an occupancy map that splits the workspace into voxels and computes the log odds ratio that each voxel is occupied by a color. Every time the detector receives a frame from the end effector camera, the state of a voxel is updated based on whether the camera measured a block in that voxel on that frame. This gives us a probability that the block is actually there rather than a binary state. In detail, we store the occupancy map in a sparse voxel grid with Bayesian occupancy, decay, and frustum miss. Storage is keyed by integer $(ix, iy, iz)$ tuples derived from world-frame coordinates. Parallel arrays hold per-voxel state: log-odds occupancy, observation count, last-seen scan index, and RGB color. Each time the brain requests a scan, the detector runs the full probabilistic pipeline to integrate all detections:
+\begin{enumerate}
+    \item Decay -- multiplicative confidence decay on stale positive log-odds
+    \item Hit update -- log-odds addition with clamping to [L\_MIN, L\_MAX] and observation count capped at obs\_count\_max
+    \item Frustum miss -- penalty for confident voxels in the camera's field of view but not observed this scan
+    \item Pruning -- periodic garbage collection of dead voxels (near L\_MIN)
+\end{enumerate}
+The grid doubles its backing arrays on demand so that typical integrations involve only bulk numpy operations plus a dict-membership check over the (usually 1-10 K) unique voxels per frame to minimize compute needed. 
+
+\input{diagrams/worldmap}
+
+\subsection{Structure Reconstruction}
+
+At the start of construction and after every block is placed, the system reconstructs the state of the structure internally to determine what the next block to place should be. To do this, the arm moves the camera to a position directly above the structure and integrates several scans of the end effector camera to construct a world map, which contains positions of blocks in the structure. The system then matches the positions of the blocks in the structure to grid cells defined by the row, column, and layer relative to the base grid of blocks. It is then able to determine whether the detected blocks are in the correct positions. If the detected blocks are obscuring any other blocks (i.e. if there are several blocks stacked on top of each other, then the detector will only see the top block due to it only accumulating pointclouds from a top-to-bottom POV), then it assumes that the obscured blocks are in the correct place. This assignment of blocks to their cells allows the system to maintain an inner understanding of what the structure is, and therefore allows it to determine what the next block to place or remove should be.
+
+\input{diagrams/reconstruction}

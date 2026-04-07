@@ -1,0 +1,42 @@
+\section{\textbf{Lyapunov Stability}}
+
+\noindent Consider the candidate Lyapunov function
+
+$$V(x) = x^\top P x$$
+
+\noindent where $P = P^\top \succ 0$ satisfying the CTLE
+
+$$A^\top P + PA = -Q$$
+
+\noindent From the conditions for stability we have
+
+$$\lambda_{min}(P) \|x\|^2 \leq V(x) \leq \lambda_{max}(P) \|x\|^2$$
+
+\noindent We verify the second condition we have
+
+$$\begin{aligned}
+    \dot{V}(x) &= \dot{x}^\top P x + x^\top P \dot{x} \\
+               &= x^\top A^\top P x + x^\top P Ax \\
+               &= x^\top (A^\top P + PA) x \\
+               &= -x^\top Q x
+\end{aligned}$$
+
+\noindent Thus, we have
+
+$$\dot{V}(x) \leq -\lambda_{min}(Q) \|x\|^2$$
+
+\noindent In this case, taking $Q = I_6$ we compute $P$ for the closed loop system, which yields the eigenvalues
+$$\lambda(P) = \begin{bmatrix}
+    0.1129 \\
+    0.2701 \\
+    1.1506 \\
+    1.4446 \\
+    6.7640 \\
+    7.7801
+\end{bmatrix}$$
+
+\noindent Thus, we have
+
+$$0.1129 \; \|x\|^2 \leq V(x) \leq 7.7801 \; \|x\|^2$$
+
+$$\dot{V}(x) \leq - \| x \|^2$$

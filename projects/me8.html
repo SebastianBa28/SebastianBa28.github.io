@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ME 8 — Gimbal Tracking System · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Caltech · ME 8</div>
+      <h1 class="project-hero__title">ME 8 — Gimbal Tracking System</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <div class="callout">
+        <div class="callout__title">Project Overview</div>
+        <div class="callout__body">
+          Designed and fabricated a camera platform incorporating precision motors to control the
+          <strong>pan and tilt positions</strong> of the camera. Developed a vision system to identify
+          objects of interest and follow them to remain at the center of the frame at all times.
+        </div>
+      </div>
+
+      <h2>System Overview</h2>
+      <div class="img-full">
+        <img src="../assets/projects/me8/image.png" alt="Gimbal tracking system" />
+      </div>
+
+      <h2>Mechanical Design</h2>
+      <p>
+        Designed <strong>L-bracket</strong> attachments to connect two stepper motors and hold a camera.
+        Parts were manufactured using a <strong>3D Printer and Laser Cutter</strong>.
+        The entire assembly was modeled in OnShape and integrated on a <strong>Raspberry Pi</strong> microcontroller.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/me8/image 1.png" alt="Mechanical assembly" />
+        <img src="../assets/projects/me8/image 2.png" alt="CAD model" />
+      </div>
+
+      <h2>Detection &amp; Following Routine</h2>
+      <p>
+        Implemented <strong>Cascade Classifiers</strong> using <strong>OpenCV</strong> to detect human faces.
+        Developed a custom vision detection routine to identify tennis balls using
+        <strong>binary masking and Gaussian blurring.</strong>
+        A <strong>PID controller</strong> drives the camera to keep the detected object centered in frame.
+      </p>
+      <div class="img-full">
+        <img src="../assets/projects/me8/image 3.png" alt="Detection and tracking diagram" />
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

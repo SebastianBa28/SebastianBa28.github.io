@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SURF — Vortex Formation Research · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Caltech · Gharib Research Group · 2023</div>
+      <h1 class="project-hero__title">Summer Undergraduate Research Fellow</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <div class="callout">
+        <div class="callout__title">Research Overview</div>
+        <div class="callout__body">
+          Conducted research in fluid dynamics under <strong>Professor Mory Gharib's Research Group.</strong>
+          Led experimental study of <strong>vortex formation times</strong> across perforated plates
+          for micro-aerial vehicles, using fluorescent dye visualization and Particle Imaging Velocimetry (PIV).
+        </div>
+      </div>
+
+      <h2>Vortex Rings</h2>
+      <p>
+        Vortex rings are flow structures characterized by rotating fluid motion where the flow curls around
+        a vortex core. They appear in ocean currents, bird flight, and experimental fluid modeling.
+        Gharib (1998) identified a universal <strong>vortex formation timescale</strong> of <strong>3.6–4.5</strong>
+        at which a vortex achieves maximum circulation before pinch-off — a ratio of stroke distance to cylinder diameter.
+      </p>
+      <div class="img-full">
+        <img src="../assets/projects/surf/image.png" alt="Vortex ring diagram" />
+      </div>
+
+      <h2>Experiment Overview</h2>
+      <p>
+        We explored the wake dynamics of <strong>perforated plates</strong> at varying porosity levels.
+        By allowing fluid to flow through the plate surface, perforated plates display different aerodynamic
+        properties than solid plates — affecting drag, lift, and boundary layer behavior. Three porosity ratios were tested:
+      </p>
+      <ul>
+        <li>63% Open Area</li>
+        <li>33% Open Area</li>
+        <li>0% Open Area (solid)</li>
+      </ul>
+      <div class="img-full">
+        <img src="../assets/projects/surf/image 1.png" alt="Previous research reference" />
+      </div>
+
+      <h2>Experimental Setup</h2>
+      <p>
+        A frame was designed and manufactured to mount the perforated plates onto a
+        <strong>Captive Trajectory System</strong>, translating them across a large water tank.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/surf/image 2.png" alt="Water tank setup" />
+        <img src="../assets/projects/surf/image 3.png" alt="Plate mounting rig" />
+      </div>
+
+      <h2>Flow Dye Visualization</h2>
+      <p>
+        <strong>Fluorescent dye</strong> under <strong>UV light</strong> was used to observe vortex formation
+        as each perforated plate moved through the water.
+      </p>
+      <div class="img-full">
+        <img src="../assets/projects/surf/image 4.png" alt="Flow dye visualization" />
+      </div>
+
+      <h2>Particle Imaging Velocimetry (PIV)</h2>
+      <p>
+        Highly-reflective particles were illuminated by a high-power laser and imaged by a camera.
+        Image-processing techniques generated a <strong>velocity vector field</strong> to determine
+        the direction and magnitude of fluid motion around each plate.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/surf/image 5.png" alt="PIV setup" />
+        <img src="../assets/projects/surf/image 6.png" alt="PIV velocity field" />
+      </div>
+
+      <h2>Vortex Circulation Analysis</h2>
+      <p>
+        From the velocity field, the <strong>vorticity field</strong> was computed to identify vortex
+        formation and shedding. Circulation was calculated to assess vortex strength and determine the
+        formation number.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/projects/surf/image 7.png" alt="Vorticity field" />
+        <img src="../assets/projects/surf/image 8.png" alt="Circulation vs time" />
+      </div>
+
+      <h2>Results</h2>
+      <p>
+        Perforated plates formed vortices significantly earlier than the solid plate:
+      </p>
+      <ul>
+        <li><strong>Solid plate:</strong> formation number at T = 6.8</li>
+        <li><strong>33% Open Area:</strong> peak circulation at T = 3.3</li>
+        <li><strong>63% Open Area:</strong> peak circulation at T = 2.3</li>
+      </ul>
+      <p>
+        This behavior is attributed to jets flowing across the perforation area and their interaction
+        with the trailing wake.
+      </p>
+      <div class="img-full">
+        <img src="../assets/projects/surf/image 9.png" alt="Results — circulation comparison" />
+      </div>
+
+      <h2>SURF Seminar Presentation</h2>
+      <div class="pdf-embed">
+        <div class="pdf-embed__toolbar">
+          <span class="pdf-embed__title">📄 SURF Seminar — Sebastian Banuelos</span>
+          <a class="pdf-embed__open" href="../assets/projects/surf/Sebastian_Banuelos_-_SURF_Seminar.pdf" target="_blank">Open in new tab ↗</a>
+        </div>
+        <iframe class="pdf-embed__frame" src="../assets/projects/surf/Sebastian_Banuelos_-_SURF_Seminar.pdf" loading="lazy"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

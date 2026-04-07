@@ -1,0 +1,43 @@
+\noindent where
+\[ A =  \frac{\partial f}{\partial x} \Bigg|_{x_{ref}, u_{ref}}
+\quad\quad\quad\quad
+B = \frac{\partial f}{\partial u} \Bigg|_{x_{ref}, u_{ref}} \]
+
+\noindent Given the nominal state and input at time $t_i$
+
+\[ x_{0} = \begin{bmatrix}
+    x_i & \dot{x}_i & y_i & \dot{y}_i & \theta_i & \dot{\theta}_i
+\end{bmatrix} \]
+\[ u_i = \begin{bmatrix}
+    u_{1i} & u_{2i}
+\end{bmatrix} \]
+
+\noindent Thus, we have the linear system
+
+\[ \dot{e} = \begin{bmatrix}
+    0 & 1 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & A_{2,5} & 0 \\
+    0 & 0 & 0 & 1 & 0 & 0 \\
+    0 & 0 & 0 & 0 & A_{4,5} & 0 \\
+    0 & 0 & 0 & 0 & 0 & 1 \\
+    0 & 0 & 0 & 0 & 0 & 0 \\
+\end{bmatrix} e +
+\begin{bmatrix}
+    0 & 0 \\
+    B_{2,1} & B_{2,2} \\
+    0 & 0 \\
+    B_{4,1} & B_{4,2} \\
+    0 & 0 \\
+    B_{6,1} & B_{6,2} \\
+\end{bmatrix} e_u\]
+
+\noindent where
+\[ A_{2,5} = -\frac{(u_{1i} + u_{2i})}{m}\cos \theta_i \]
+
+\[ A_{4,5} = -\frac{(u_{1i} + u_{2i})}{m}\sin \theta_i \]
+
+\[ B_{2,1} = B_{2,2} = -\frac{\sin \theta_i}{m} \]
+
+\[ B_{4,1} = B_{4,2} = \frac{\cos\theta_i}{m} \]
+
+\[ B_{6,1} = -B_{6,2} = \frac{r}{I} \]

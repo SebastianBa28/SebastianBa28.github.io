@@ -1,0 +1,50 @@
+\section{\textbf{Solutions Through Approximations}}
+
+To compute solutions numerically, we employ Picard Iteration using the recursive integral formula
+
+\[ \phi_{0}(t) = x_0 \]
+
+\[ \phi_{k+1}(t) = x_0 + \int_{t_0}^t f(\phi_k(s)) ds\]
+
+\noindent The following figures compare the converged Picard solutions against a standard Runge-Kutta (RK45) numerical solver to verify the accuracy of the approximation.
+
+\begin{figure}[htbp]
+    \centering
+    
+    % --- First Row ---
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp2/Picard1.png}
+        \caption{Spatial Trajectory}
+        \label{fig:img1}
+    \end{subfigure}
+    \hfill % Adds horizontal space to push the images apart
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp2/Picard 2.png}
+        \caption{X Components}
+        \label{fig:img2}
+    \end{subfigure}
+    
+    \label{fig:four_images}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    % --- Second Row ---
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp2/Picard3.png}
+        \caption{Y Components}
+        \label{fig:img3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp2/Picard4.png}
+        \caption{Orientation}
+        \label{fig:img4}
+    \end{subfigure}
+    
+    \label{fig:four_images}
+\end{figure}

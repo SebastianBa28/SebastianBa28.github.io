@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CDS 232 — Planar Drone: Dynamics &amp; Control · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Caltech · CDS 232: Nonlinear Dynamics · Spring 2026 · Prof. Aaron Ames</div>
+      <h1 class="project-hero__title">CDS 232 — Planar Drone:<br>Dynamics &amp; Control</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <!-- OVERVIEW -->
+      <div class="callout">
+        <div class="callout__title">Project Overview</div>
+        <div class="callout__body">
+          Full nonlinear analysis and control design for a <strong>3-DOF planar quadrotor</strong>.
+          Derived equations of motion from first principles, designed an <strong>LQR trajectory-tracking
+          controller</strong> via linearization, and extended the system with
+          <strong>Control Barrier Functions (CBF)</strong> to guarantee real-time obstacle avoidance
+          via quadratic programming. Implemented entirely in MATLAB.
+        </div>
+      </div>
+
+      <!-- SYSTEM MODEL -->
+      <h2>System Model</h2>
+      <p>
+        The planar drone is modeled as a rigid body with two independent thrust inputs
+        <em>u</em><sub>1</sub> and <em>u</em><sub>2</sub> separated by moment arm <em>r</em>.
+        The six-dimensional state vector is
+        <strong>[x, ẋ, y, ẏ, θ, θ̇]<sup>T</sup></strong> — horizontal and vertical position
+        and velocity, plus pitch angle and rate.
+      </p>
+      <div class="img-full">
+        <img src="../assets/CDS%20232%20Report/figures/cp1/quadrotor2d.svg" alt="3-DOF planar quadrotor diagram" />
+      </div>
+
+      <p>The equations of motion follow directly from Newton-Euler rigid body dynamics:</p>
+      <div class="code-block"><span class="comment">// Translational dynamics</span>
+m · ẍ  =  <span class="accent">−(u₁ + u₂) · sin(θ)</span>
+m · ÿ  =  <span class="accent"> (u₁ + u₂) · cos(θ)</span>  −  m · g
+
+<span class="comment">// Rotational dynamics</span>
+I · θ̈  =  <span class="accent">r · (u₁ − u₂)</span>
+
+<span class="comment">// State vector</span>
+x  =  [ x,  ẋ,  y,  ẏ,  θ,  θ̇ ]<sup>T</sup>   ∈  ℝ⁶</div>
+
+      <!-- TRAJECTORY TRACKING CONTROLLER -->
+      <h2>Trajectory Tracking Controller</h2>
+      <p>
+        A <strong>minimum-snap optimization</strong> generates a smooth nominal reference trajectory
+        over a sequence of waypoints. The controller then tracks this reference by
+        <strong>linearizing the nonlinear dynamics about the reference trajectory</strong>,
+        yielding time-varying linear error dynamics that admit an LQR solution.
+      </p>
+
+      <h3>Linearization &amp; LQR Design</h3>
+      <p>
+        Defining the tracking error <em>e = x − x<sub>ref</sub></em>, the error dynamics are:
+      </p>
+      <div class="code-block"><span class="comment">// Error dynamics (linearized about reference)</span>
+ė  =  A · e  +  B · u_e
+
+<span class="comment">// Jacobians evaluated at reference trajectory</span>
+A  =  ∂f/∂x |<sub>x_ref, u_ref</sub>       <span class="comment">% 6×6</span>
+B  =  ∂f/∂u |<sub>x_ref, u_ref</sub>       <span class="comment">% 6×2</span>
+
+<span class="comment">// LQR: solve Riccati equation for optimal gain K</span>
+K  =  <span class="accent">lqr</span>(A, B, Q, R)
+
+<span class="comment">// Final control law</span>
+u  =  u_ref  −  K · e</div>
+
+      <h3>Trajectory &amp; Tracking Results</h3>
+      <div class="img-grid">
+        <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTraj.png" alt="Spatial trajectory" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/trajComponents.png" alt="X and Y trajectory components" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/orientation.png" alt="Orientation profile θ(t)" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/controlInputs.png" alt="Motor inputs u₁ and u₂" />
+      </div>
+      <div class="img-grid">
+        <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTracking.png" alt="Trajectory tracking" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/trackingError.png" alt="Tracking error" />
+      </div>
+
+      <!-- BARRIER FUNCTIONS -->
+      <h2>Safety-Critical Control: Barrier Functions</h2>
+      <p>
+        The LQR controller is extended with a <strong>Control Barrier Function (CBF)</strong> layer
+        to guarantee obstacle avoidance in real time. At each timestep, a small
+        <strong>quadratic program (QP)</strong> minimally modifies the nominal control input
+        to satisfy a safety constraint — keeping the system inside the safe set
+        <em>C = {x : h(x) ≥ 0}</em>.
+      </p>
+
+      <h3>Formulation</h3>
+      <div class="code-block"><span class="comment">// Safety function: signed distance to obstacle boundary</span>
+h(x)  =  ‖x_pos − x_obs‖  −  D_obs        <span class="comment">% positive ↔ safe</span>
+
+<span class="comment">// Relative degree 2 → extend via Lie derivative</span>
+h_e(x, v)  =  ḣ(x, v)  +  γ₁ · h(x)
+
+<span class="comment">// Safety constraint on acceleration input</span>
+ḣ_e(x, v, a)  ≥  −γ₂ · h_e(x, v)
+
+<span class="comment">// QP: minimally deviate from nominal LQR control</span>
+u*  =  <span class="accent">argmin</span>  ½‖u − u_nom‖²
+        subject to  CBF constraint</div>
+
+      <h3>Avoidance Results</h3>
+      <p>
+        Three values of γ are compared. All successfully avoid the obstacle —
+        larger γ weakens the safety margin but reduces trajectory deviation.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0.png" alt="CBF trajectory — γ₀" />
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1.png" alt="CBF trajectory — γ₁" />
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier2.png" alt="CBF trajectory — γ₂" />
+      </div>
+      <div class="img-grid">
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0Error.png" alt="Tracking error — γ₀" />
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1Error.png" alt="Tracking error — γ₁" />
+        <img src="../assets/CDS%20232%20Report/figures/cp4/BarrierError2.png" alt="Tracking error — γ₂" />
+      </div>
+
+      <h3>Control Effort Trade-off</h3>
+      <p>
+        Tighter tracking demands higher control effort during avoidance, producing oscillations.
+        A looser tracking weight yields smoother avoidance at the cost of larger steady-state error.
+      </p>
+      <div class="img-grid">
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Control1.png" alt="Control inputs — low tracking cost" />
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Control2.png" alt="Control inputs — high tracking cost" />
+      </div>
+
+      <!-- FULL REPORT -->
+      <h2>Full Report</h2>
+      <div class="pdf-embed">
+        <div class="pdf-embed__toolbar">
+          <span class="pdf-embed__title">📄 CDS 232 Final Project Report — Sebastian Banuelos</span>
+          <a class="pdf-embed__open" href="../assets/CDS%20232%20Report/Sebastian%20Banuelos%20-%20Final%20Project%20Report.pdf" target="_blank">Open in new tab ↗</a>
+        </div>
+        <iframe class="pdf-embed__frame" src="../assets/CDS%20232%20Report/Sebastian%20Banuelos%20-%20Final%20Project%20Report.pdf" loading="lazy"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

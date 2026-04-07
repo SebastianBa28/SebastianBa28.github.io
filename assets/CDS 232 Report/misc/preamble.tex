@@ -1,0 +1,51 @@
+
+\usepackage{graphicx}
+\usepackage{svg}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, fit, backgrounds, shapes.geometric, calc}
+\usepackage{booktabs}
+\usepackage{microtype}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{blue},
+    numbers=left,
+    numberstyle=\small\color{gray},
+    stepnumber=1,
+    showstringspaces=false,
+    tabsize=4,
+    breaklines=true,
+    frame=single,
+}
+
+\tikzset{
+  main/.style  = {rectangle, draw=black!60, fill=blue!8, rounded corners=4pt,
+                  text width=2.6cm, align=center, minimum height=8mm,
+                  font=\small\sffamily},
+  recov/.style = {rectangle, draw=black!60, fill=red!10, rounded corners=4pt,
+                  text width=2.4cm, align=center, minimum height=8mm,
+                  font=\small\sffamily},
+  scan/.style  = {rectangle, draw=black!60, fill=cyan!12, rounded corners=4pt,
+                  text width=2.6cm, align=center, minimum height=8mm,
+                  font=\small\sffamily},
+  dec/.style   = {diamond, draw=black!60, fill=orange!15, align=center,
+                  minimum width=2.2cm, minimum height=5mm, inner sep=1pt,
+                  font=\scriptsize\sffamily, aspect=2.8},
+  term/.style  = {ellipse, draw=black!60, fill=gray!15, align=center,
+                  minimum height=8mm, minimum width=2.4cm,
+                  font=\small\sffamily\bfseries},
+  arr/.style   = {->, >=Stealth, semithick},
+  darr/.style  = {->, >=Stealth, semithick, dashed, gray!60},
+}

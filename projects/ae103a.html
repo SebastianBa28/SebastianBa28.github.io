@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ae 103a — CubeSat ADCS · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Caltech · Ae 103a — Aerospace Controls</div>
+      <h1 class="project-hero__title">Ae 103a — CubeSat ADCS</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <div class="callout">
+        <div class="callout__title">Project Overview</div>
+        <div class="callout__body">
+          Developed an Attitude Determination and Control System (ADCS) for CubeSat satellites using
+          Reaction Wheels. Derived system dynamics using <strong>quaternion kinematics.</strong>
+          Linearized dynamics to make use of linear control theory. Designed a <strong>Kalman Filter</strong>
+          for state estimation and an <strong>LQR Controller</strong> for pointing correction.
+          Implemented the overall system in <strong>Simulink</strong> to test the robustness of the
+          controller against unmodeled disturbances.
+        </div>
+      </div>
+
+      <h2>System Diagram</h2>
+      <div class="img-full">
+        <img src="../assets/projects/ae103a/image.png" alt="CubeSat ADCS system diagram" />
+      </div>
+
+      <h2>Project Write-Up</h2>
+      <div class="pdf-embed">
+        <div class="pdf-embed__toolbar">
+          <span class="pdf-embed__title">📄 Ae 103a Final Project — Sebastian Banuelos</span>
+          <a class="pdf-embed__open" href="../assets/projects/ae103a/Sebastian_Banuelos__Ae103_Final_Project.pdf" target="_blank">Open in new tab ↗</a>
+        </div>
+        <iframe class="pdf-embed__frame" src="../assets/projects/ae103a/Sebastian_Banuelos__Ae103_Final_Project.pdf" loading="lazy"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

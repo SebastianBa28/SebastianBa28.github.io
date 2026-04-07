@@ -1,0 +1,47 @@
+\section{Mechanism and Hardware}
+
+The block assembly task requires a manipulator capable of reaching arbitrary positions on a planar workspace with sufficient dexterity to grasp, tilt, and rotate blocks during pick-and-place and separation maneuvers. We designed a 5-DOF arm driven by 6 HEBI motors with skeletonized aluminum links (14'' shoulder-to-elbow, 12'' elbow-to-wrist), a bicycle-cable-actuated two-finger gripper, and a wrist-mounted Intel RealSense depth camera.
+
+\subsection{Main Robot Hardware}
+The design consist of a 5DoF manipulator arm with 6 motors and a versatile two-finger gripper as an end-effector. The main structural frame utilizes two aluminum brackets (14" for shoulder-elbow link and 12" for elbow-wrist link) that have been skeletonized to minimize mass and inertia. The gripper is actuated via a motor near the shoulder motor that pulls on the gripper through a bicycle cable. The wrist-tilt motor is attached to a wrist bracket which supports the wrist-roll motor and the end-effector camera mount. We mount a RealSense depth camera to the camera mount at a vertical orientation with an angle that allows for viewing the current gripped block and scanning the workspace when the gripper is open and not obstructing the view.
+
+\begin{figure}[!h]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{final/imgs/side_view.JPG}
+  \captionof{figure}{Side View}
+  \label{fig:side}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{final/imgs/top_view.JPG}
+  \captionof{figure}{Top View}
+  \label{fig:top}
+\end{minipage}
+\end{figure}
+
+
+\noindent Each motor was selected according to its expected maximum torque requirements when the arm is fully extended (Table \ref{table:motors}). The five degrees of freedom---three Cartesian axes plus tilt and roll---were chosen as the minimum set needed for the task: tilt enables the separation maneuver that slides magnetically-attached neighbors off, and roll aligns the fingers with a block's edges at any orientation. Yaw is unnecessary because all blocks are approached from above.
+
+\begin{table}[!h]
+\centering
+\caption{Robot Actuator Torque Specifications}
+\label{table:motors}
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Joint} & \textbf{Motor} & \textbf{Peak (N·m)} & \textbf{Cont. (N·m)} & \textbf{Max Load (N·m)} \\ \hline
+Base & X8-9 & 20.0 & 8.0 & Not Under Load \\ \hline
+Shoulder & X8-9 & 20.0 & 8.0 & 7.36 \\ \hline
+Elbow & X5-4 & 7.0 & 4.0 & 2.38 \\ \hline
+Wrist Tilt & X5-1 & 2.5 & 1.3 & 0.1 \\ \hline
+Wrist Roll & X5-1 & 2.5 & 1.3 & Not Under Load \\ \hline
+Gripper & X5-1 & 2.5 & 1.3 & 0.1 \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Gripping}
+The design incorporates a two-finger parallel gripper used to pick up and place blocks. The gripper is actuated by a HEBI X5-1 motor mounted near the shoulder, which pulls on the gripper fingers through a bicycle cable routed along the arm. Placing the motor near the base rather than at the wrist significantly reduces distal mass and inertia, improving the arm's dynamic performance and reducing the torque requirements on the wrist and elbow joints. The motor's rotary position is converted to a linear finger opening via a simple radians-to-millimeters mapping, with the fingers moving approximately 15\,mm forward when fully closed. The inner faces of the fingers are lined with a foam material to increase friction during grasping, preventing blocks from slipping during transport and separation maneuvers.
+
+\subsection{Cameras}
+The system uses two cameras. A Logitech webcam is mounted in a fixed elevated position above the workspace, providing a top-down view. An Intel RealSense D435i depth camera is mounted to the wrist bracket above the gripper, oriented vertically to view the grip area and the workspace below. Further details on the detection pipelines and calibration procedures for each camera are described in Section \ref{sec:cameras}.

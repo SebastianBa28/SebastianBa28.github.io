@@ -1,0 +1,87 @@
+\newpage
+\section{Appendix A: An example of our structure JSON} \label{sec:appendix}
+
+\noindent We established a generalized JSON format to specify the location of building blocks in the desired structure. The JSON file contains metadata about the requested structure (name, number of blocks, max build grid size and the colors and locations of every block). The following is an example of this JSON format for the flower structure in Figure \ref{fig:flower}. \\
+
+\begin{lstlisting}
+    {
+      "metadata": { 
+        "version": "1.0", 
+        "title": "Flower Block Assembly Instructions", 
+        "description": "Instructions for block assembler robot to build 3D structures", 
+        "gridSize": { "length": 8, "width": 8, "height": 8 }, "totalBlocks": 23},
+        
+      "blocks": [
+        { "id": 4, "color": "green", "position": { "x": 4, "y": 4, "z": 1 } },
+        { "id": 5, "color": "green", "position": { "x": 3, "y": 4, "z": 1 } },
+        { "id": 6, "color": "green", "position": { "x": 5, "y": 4, "z": 1 } },
+        { "id": 7, "color": "green", "position": { "x": 4, "y": 3, "z": 1 } },
+        { "id": 8, "color": "green", "position": { "x": 4, "y": 5, "z": 1 } },
+        { "id": 9, "color": "green", "position": { "x": 4, "y": 4, "z": 2 } },
+        { "id": 10, "color": "red", "position": { "x": 3, "y": 4, "z": 2 } },
+        { "id": 11, "color": "red", "position": { "x": 5, "y": 4, "z": 2 } },
+        { "id": 12, "color": "red", "position": { "x": 4, "y": 3, "z": 2 } },
+        { "id": 13, "color": "red", "position": { "x": 4, "y": 5, "z": 2 } },
+        { "id": 14, "color": "yellow", "position": { "x": 2, "y": 4, "z": 2 } },
+        { "id": 15, "color": "yellow", "position": { "x": 6, "y": 4, "z": 2 } },
+        { "id": 16, "color": "yellow", "position": { "x": 4, "y": 2, "z": 2 } },
+        { "id": 17, "color": "yellow", "position": { "x": 4, "y": 6, "z": 2 } },
+        { "id": 18, "color": "green", "position": { "x": 4, "y": 4, "z": 3 } },
+        { "id": 19, "color": "red", "position": { "x": 3, "y": 4, "z": 3 } },
+        { "id": 20, "color": "red", "position": { "x": 5, "y": 4, "z": 3 } },
+        { "id": 21, "color": "red", "position": { "x": 4, "y": 3, "z": 3 } },
+        { "id": 22, "color": "red", "position": { "x": 4, "y": 5, "z": 3 } },
+        { "id": 23, "color": "yellow", "position": { "x": 4, "y": 4, "z": 4 } }
+      ]
+    }
+\end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{hw7/flower.png}
+    \caption{The flower design as specified in the example JSON file.}
+    \label{fig:flower}
+\end{figure}
+
+\section{Appendix B: User Interface}
+
+\subsection{Structure Design Agent}
+
+We built a conversational AI agent using the Google Agent Development Kit (ADK) powered by Gemini 2.5 Flash that allows users to design block structures through natural language. The user describes a desired structure (e.g., ``build a flower'' or ``make a 3-layer pyramid''), and the agent iteratively generates, validates, and refines an assembly JSON file. The agent has access to seven tools:
+
+\begin{itemize}
+    \item \texttt{get\_assembly\_constraints} --- returns the physical rules the structure must satisfy (grid bounds, cantilever limits, ground connectivity, etc.)
+    \item \texttt{count\_available\_blocks} --- reports the inventory of physically available blocks per color
+    \item \texttt{list\_existing\_assemblies} / \texttt{load\_assembly} --- browse and load previously saved designs
+    \item \texttt{verify\_assembly} --- validates the JSON against eight rules: grid bounds, duplicate positions, duplicate IDs, valid colors, build-order support, cantilever limits, ground connectivity, and reachability
+    \item \texttt{visualize\_assembly} --- renders a layer-by-layer ASCII preview of the structure
+    \item \texttt{save\_assembly} --- persists the verified design to disk as a JSON file
+\end{itemize}
+
+\subsection{Dashboard}
+
+We implemented a real-time web dashboard served via a standalone FastAPI server. The Brain node posts build-state events (phase transitions, block placements, errors) to the server via a non-blocking HTTP client. The dashboard displays a 3D Three.js rendering of the target structure overlaid with placed blocks, real-time build phase indicators, block placement statistics, an event log with timestamps, and health status indicators for each ROS node. Connected browsers receive live updates via Server-Sent Events (SSE).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\linewidth]{final/imgs/dashboard.png}
+    \caption{Screenshot of the dashboard.}
+    \label{fig:dashboard}
+\end{figure}
+
+
+\section{Appendix C: Depth Anything V2 for Grip Analysis}
+\label{appendix:depth_anything}
+
+We use the Depth Anything V2 Base model (97M parameters) to produce monocular depth estimates from the end-effector RGB camera. The RealSense depth sensor cannot be used directly for grip analysis because the gripped block is too close to the camera, falling outside its minimum supported depth range. Instead, we capture an RGB image of the grip area and infer a relative depth map using the pre-trained model.
+
+\noindent The model is served via a standalone FastAPI server rather than integrated directly into the ROS detector node. Early experiments showed that running inference within the ROS callback pipeline introduced unacceptable latency, as the model's GPU compute blocked the detector's frame-processing loop. Hosting it as a separate HTTP service allows the detector to issue non-blocking requests and continue processing camera frames while depth inference runs in parallel.
+
+\noindent Figure~\ref{fig:depth_comparison} shows example depth maps across grip states (good, diagonal, partial\_low, partial\_high, low) comparing the Small (25M), Base (97M), and Large (335M) model variants. We selected the Base model as it provided sufficient spatial resolution to distinguish grip quality classes while maintaining acceptable inference time.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{final/imgs/depth_comparison_green-depth_anything_v2.jpg}
+\caption{Depth Anything V2 model comparison across grip states. The Base model (97M) provides sufficient resolution for grip classification.}
+\label{fig:depth_comparison}
+\end{figure}

@@ -1,0 +1,21 @@
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=0.4cm and 0.4cm]
+
+\node[scan] (input) {Top Camera\\Detections};
+\node[main, right=of input] (buf) {Buffer\\(2\,s window)};
+\node[main, right=of buf] (clust) {DBSCAN\\Clustering};
+\node[dec, right=of clust] (stable) {Stable \&\\consistent?};
+\node[term, right=of stable, yshift=7mm] (pub) {Publish\\Object};
+\node[recov, right=of stable, yshift=-7mm] (disc) {Discard};
+
+\draw[arr] (input) -- (buf);
+\draw[arr] (buf) -- (clust);
+\draw[arr] (clust) -- (stable);
+\draw[arr] (stable) |- node[above,font=\scriptsize,pos=0.3]{yes} (pub);
+\draw[arr] (stable) |- node[below,font=\scriptsize,pos=0.3]{no} (disc);
+
+\end{tikzpicture}
+\caption{Top camera detection buffering. Raw detections are accumulated over a sliding window, clustered with DBSCAN, and published only if the cluster is spatially stable and consistently detected for the full buffer duration.}
+\label{fig:buffering}
+\end{figure}

@@ -1,0 +1,22 @@
+\lstset{language=Matlab}
+
+\section{\textbf{Hartman-Grobman Theorem}}
+\noindent We verify the topological equivalence of the linearization Consider the control law of the form $u = u_0 - k\tilde{x}$ where the gain $k$ is computed as LQR. We are then left with the autonomous system
+
+\[ \begin{aligned}
+    \dot{\tilde{x}} &= (A - Bk)\tilde{x} \\
+                    &= A_{aug} \; \tilde{x}
+\end{aligned} \]
+
+\noindent We verify the local equivalence of the linearization to the nonlinear system through Hartman-Grobman.
+
+\[ \lambda(A) = \begin{bmatrix}
+    -1.0111 + 1.5707i \\
+    -1.0111 - 1.5707i \\
+    -1.9667 \\
+    -1.0108 \\
+    -1.0987 + 0.4551i \\
+    -1.0987 - 0.4551i
+\end{bmatrix}\]
+
+\noindent Given that all eigenvalues have a nonzero real part, we can conclude $(0,0)$ is a hyperbolic equilibrium of the error dynamics.

@@ -1,0 +1,114 @@
+\section{\textbf{Barrier Functions for Obstacle Avoidance}}
+
+\noindent Consider the barrier function candidate
+
+\[ h(x) = \| x - x_{obs} \| - D_{obs} \]
+
+\noindent We seek to enforce the condition
+
+\[ \dot{h}(x, v) = \frac{(x - x_{obs})^\top}{\|x - x_{obs} \|} v \geq \alpha h(x) \]
+
+\noindent Note that there are no input terms in this expression, i.e.\ we say $h$ has relative degree 2. Thus, we construct the extended barrier function
+
+\[ \begin{aligned}
+    h_e(x,v) &= \dot{h}(x,v) + \gamma_1 h(x) \\
+    &= \frac{(x - x_{obs})^\top}{\|x - x_{obs} \|} v + \gamma_1 \| x - x_{obs} \| - \gamma_1 D_{obs}
+\end{aligned} \]
+
+\noindent Taking a derivative along
+
+\begin{multline}
+    \dot{h}_e(x, v, a) = \frac{v^\top v + (x - x_{obs})^\top a}{\| x - x_{obs} \|} \\
+    - \frac{((x - x_{obs})^\top v)^2}{\| x - x_{obs} \|^3}
+    + \gamma_1 \frac{(x - x_{obs})^\top v}{\|x - x_{obs} \|}
+\end{multline}
+
+\noindent where $a = \begin{bmatrix}
+    \ddot{x} \\ \ddot{y}
+\end{bmatrix} = \begin{bmatrix}
+    -(u_1 + u_2) \sin\theta / m \\
+    (u_1 + u_2) \cos\theta / m - g \\
+\end{bmatrix}$ \\
+
+\noindent We seek to enforce the condition
+
+\[ \dot{h}_e (x, v, a) \geq \gamma_2 h(x, v)\]
+
+\noindent In order to blend the barrier-safety controller with the nominal trajectory following controller, we seek to find the optimal $u$
+
+\[ u^* = \min_u \frac{1}{2} \| u_{nom} - u\|^2\]
+
+\noindent subject to the constraint
+
+\[ \dot{h}_e (x, v, a) \geq -\gamma_2 h(x, v)\]
+
+\noindent Employing this CBF on a simple trajectory, we observe
+
+\begin{figure}[htbp]
+    \centering
+    % --- First Row ---
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/Barrier0.png}
+        \label{fig:img1}
+    \end{subfigure}
+    \hfill % Adds horizontal space to push the images apart
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/Barrier0Error.png}
+        \label{fig:img2}
+    \end{subfigure}
+
+    \caption{Barrier function across different values of $\gamma_1, \gamma_2$}
+\end{figure}
+
+\noindent The controller successfully pushes the drone away from the obstacle. Increasing values of gamma weaken the safety condition, allowing the drone to come close to the obstacle. 
+
+\newpage
+
+\noindent Applying the CBF to the trajectory shown earlier, we can observe the following performance.
+
+\begin{figure}[htb]
+    \centering
+    % --- First Row ---
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/Barrier1.png}
+        \label{fig:img1}
+    \end{subfigure}
+    \hfill % Adds horizontal space to push the images apart
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/Barrier2.png}
+        \label{fig:img2}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/Barrier1Error.png}
+        \label{fig:img1}
+    \end{subfigure}
+    \hfill % Adds horizontal space to push the images apart
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/BarrierError2.png}
+        \label{fig:img2}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/Control1.png}
+        \label{fig:img1}
+    \end{subfigure}
+    \hfill % Adds horizontal space to push the images apart
+    \begin{subfigure}[b]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{final/figures/cp4/Control2.png}
+        \label{fig:img2}
+    \end{subfigure}
+    \label{fig:four_images}
+
+    \caption{Comparison of low cost tracking controller (left) vs aggressive tracking controller (right)}
+\end{figure}
+
+\noindent We can observe that as the controller pushes the drone away from the obstacle, it begins to fall behind along the desired trajectory. This could be compensates by increasing the state cost in the LQR formulation (shown on the right). Although this leads to tighter tracking, it blows up the desired control inputs and overshoots, leading to oscillations along the remainder of the trajectory.

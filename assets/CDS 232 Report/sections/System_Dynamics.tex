@@ -1,0 +1,25 @@
+\section{\textbf{System Dynamics}}
+
+\noindent For a drone of mass $m$ and thrust inputs $u_1,u_2$, the translational dynamics expressed in the inertial frame are given by
+\[ m\ddot{x} = - (u_1 + u_2) \sin \theta \]
+\[ m\ddot{y} = (u_1 + u_2) \cos \theta - mg\]
+
+\noindent The rotational dynamics are given by
+\[ I\ddot{\theta} = r(u_1 - u_2) \]
+
+\noindent where $I$ is the moment and $r$ is the distance from the motors to the CoM.
+
+\noindent Considering the state vector
+\[ x = \begin{bmatrix}
+    x & \dot{x} & y & \dot{y} & \theta & \dot{\theta}
+\end{bmatrix}\]
+
+\noindent We write the system dynamics as follows
+\[ \dot{x} = \begin{bmatrix}
+    \dot{x} \\
+    -(u_1 + u_2) \sin\theta / m \\
+    \dot{y} \\
+    (u_1 + u_2) \cos\theta / m - g \\
+    \dot{\theta} \\
+    r(u_1 - u_2) / I
+\end{bmatrix} \]
