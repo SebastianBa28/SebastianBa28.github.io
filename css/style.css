@@ -590,9 +590,10 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
 
 .card__cover {
   width: 100%;
-  height: 190px;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   background: var(--color-surface);
+  display: block;
 }
 
 .card__cover--placeholder {
@@ -945,8 +946,8 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   cursor: zoom-in;
   transition: transform .2s, box-shadow .2s;
 }
@@ -959,8 +960,8 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   width: 100%;
-  max-height: 480px;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
 }
 
 .pdf-link {
@@ -1331,7 +1332,7 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   .hero__photo { width: 160px; height: 190px; }
 
   .card--featured { flex-direction: column; }
-  .card--featured .card__cover { width: 100%; height: 190px; }
+  .card--featured .card__cover { width: 100%; height: auto; }
 
   .projects-grid { grid-template-columns: 1fr; }
   .skills-grid { grid-template-columns: repeat(2, 1fr); }

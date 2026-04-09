@@ -1,0 +1,32 @@
+\section{Conclusion}
+
+We developed a real-time teleoperation system for the UR10e manipulator using an iPhone as a 6-DOF spatial input device. The system integrates smartphone pose estimation via visual-inertial odometry, coordinate frame mapping between the phone and robot, and dual-mode inverse kinematics---resolved-rate Jacobian control for velocity mode and analytical closed-form IK for position mode. Real-time feedback on manipulability, joint limits, and feasibility is communicated back to the operator.
+
+\subsection{Shortcomings}
+
+\begin{itemize}
+    \item \textbf{Simulation only}: The system was tested exclusively in RViz and was not connected to a physical UR10e. Real hardware would introduce additional challenges including communication latency, motor dynamics, and safety constraints.
+
+    \item \textbf{No collision avoidance}: The system enforces joint limits but does not check for self-collisions or collisions with the environment. Operating near the workspace boundary relies entirely on the feasibility feedback to warn the operator.
+
+    \item \textbf{VIO drift}: ARKit's visual-inertial odometry accumulates drift over long sessions, particularly in featureless environments. This can cause a gradual divergence between the operator's intended and actual robot motion.
+
+    \item \textbf{Communication latency}: The WebSocket relay chain (phone $\to$ server $\to$ ROS) introduces latency that, while typically under 100~ms, can affect the responsiveness of position-mode control.
+
+    \item \textbf{Limited trajectory smoothing}: An exponential moving average filter is applied to the incoming twist, but no smoothing is applied to the IK output in position mode, which can produce jerky motion when the analytical IK switches between nearby solution branches.
+
+\end{itemize}
+
+\subsection{Future Work}
+
+\begin{itemize}
+    \item \textbf{Real robot integration}: Connecting to the physical UR10e via the UR RTDE interface or \texttt{ros2\_control} would validate the system in a real-world setting and enable evaluation of tracking accuracy and operator performance.
+
+    \item \textbf{Grasping and manipulation}: Adding a gripper controlled by a phone gesture (e.g., pinch) would extend the system to pick-and-place tasks.
+
+    \item \textbf{Further trajectory smoothing}: Extending the current twist filtering to the position-mode IK output, or applying a minimum-jerk trajectory planner, would produce smoother robot motion across both control modes.
+
+    \item \textbf{Collision avoidance}: Incorporating the URDF collision meshes into the control loop would enable real-time self-collision and environment collision checks.
+
+    \item \textbf{Multi-user teleoperation}: Supporting multiple phones controlling different aspects of the robot (e.g., one for position, one for orientation) could enable more complex manipulation tasks.
+\end{itemize}

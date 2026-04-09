@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CDS 235 — Robot Arm Teleoperation · Sebastian Banuelos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body class="project-page">
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo">Sebastian Banuelos</a>
+    </div>
+  </nav>
+
+  <div class="project-hero">
+    <div class="container">
+      <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
+      <div class="project-hero__tag">Caltech · ME/CDS/EE 235a: Advanced Robotics Kinematics · 2026</div>
+      <h1 class="project-hero__title">CDS 235 — Robot Arm Teleoperation via Smartphone Pose Estimation</h1>
+    </div>
+  </div>
+
+  <div class="project-content">
+    <div class="container">
+
+      <!-- OVERVIEW -->
+      <div class="callout">
+        <div class="callout__title">Project Overview</div>
+        <div class="callout__body">
+          Real-time teleoperation system for a <strong>UR10e 6-DOF manipulator</strong> using an iPhone as the
+          control interface. The phone's full <strong>6-DOF pose</strong> is tracked via Apple's ARKit
+          visual-inertial odometry and mapped to two robot control modes: a <strong>velocity mode</strong>
+          using resolved-rate Jacobian control, and a <strong>position mode</strong> using analytical inverse
+          kinematics. Built with ROS 2 and demonstrated in simulation with end-to-end latency under 100 ms.
+          Developed in collaboration with <strong>Firdavs Nasriddinov</strong> for ME/CDS/EE 235a: Advanced
+          Robotics Kinematics (Prof. Joel Burdick, Caltech).
+        </div>
+      </div>
+
+      <!-- DEMO VIDEO -->
+      <h2>Demo Video</h2>
+      <div class="yt-embed">
+        <iframe
+          src="https://drive.google.com/file/d/1iJ-YPce5TwE5rri7qKfI2MuopTnw3I6X/preview"
+          allow="autoplay"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <div class="project-demo">
+        <a href="https://github.com/firdavsn/robot-arm-teleop" class="btn--project-outline" target="_blank">⌥ GitHub Repo ↗</a>
+        <a href="../assets/CDS%20235%20Project/me235a.pdf" class="btn--project-outline" target="_blank">📄 View Report ↗</a>
+      </div>
+
+      <!-- MOTIVATION -->
+      <h2>Motivation</h2>
+      <p>
+        Modern robot learning pipelines — particularly Vision-Language-Action (VLA) models — depend on
+        large volumes of high-quality human demonstration data. Traditional teleoperation interfaces such as
+        teach pendants and joysticks are unintuitive for full 6-DOF control, creating a bottleneck in data
+        collection. Smartphones, already equipped with IMUs, cameras, and on-device computer vision, offer a
+        natural alternative: humans already manipulate phones in three dimensions without thinking about it,
+        making the phone itself an ergonomic spatial controller.
+      </p>
+
+      <div class="img-grid">
+        <img src="../assets/projects/cds235/phone_1.jpg" alt="iPhone as teleoperation controller" />
+        <img src="../assets/projects/cds235/phone_2.jpg" alt="ARKit pose estimation in action" />
+      </div>
+
+      <!-- SYSTEM OVERVIEW -->
+      <h2>System Overview</h2>
+      <p>
+        The system pipeline runs from phone to robot in real time over WebSocket. Apple's ARKit framework
+        continuously estimates the phone's 6-DOF pose using <strong>visual-inertial odometry (VIO)</strong>
+        — fusing camera feature tracking with IMU data through an error-state Extended Kalman Filter.
+        The resulting pose is expressed relative to an ARKit world frame (Y-up, gravity-aligned), then
+        remapped to the robot's coordinate frame via a permutation matrix. Live feedback on
+        <strong>manipulability</strong> and <strong>joint limit proximity</strong> is streamed back
+        to a web dashboard.
+      </p>
+
+      <div class="img-full">
+        <img src="../assets/projects/cds235/rviz_1.png" alt="UR10e in RViz simulation" />
+      </div>
+
+      <!-- CONTROL MODES -->
+      <h2>Control Modes</h2>
+
+      <h3>Velocity Mode</h3>
+      <p>
+        The phone's instantaneous twist (linear and angular velocity) is mapped directly to joint velocities
+        using <strong>resolved-rate control</strong> via the UR10e's geometric Jacobian. A
+        <strong>damped least-squares pseudoinverse</strong> with adaptive damping — scaled by the
+        manipulability measure — prevents instability near kinematic singularities.
+        An exponential moving average filters the twist signal to smooth control inputs.
+      </p>
+
+      <div class="img-full">
+        <img src="../assets/projects/cds235/vel_mode.png" alt="Velocity mode joint trajectories" />
+      </div>
+
+      <h3>Position Mode</h3>
+      <p>
+        The phone's displacement from a saved reference pose is interpreted as a desired end-effector target.
+        The system solves for joint angles using <strong>closed-form analytical inverse kinematics</strong>
+        derived from the UR10e's Denavit-Hartenberg parameters. This mode produces smoother, more predictable
+        trajectories for precision tasks.
+      </p>
+
+      <div class="img-full">
+        <img src="../assets/projects/cds235/pos_mode.png" alt="Position mode end-effector tracking" />
+      </div>
+
+      <!-- RESULTS -->
+      <h2>Results</h2>
+      <p>
+        The system operates in real time with <strong>end-to-end latency under 100 ms</strong>. Position mode
+        demonstrates responsive joint trajectories following the phone's motion, while velocity mode produces
+        smooth profiles with the adaptive damping mitigating singularity effects. A reset behavior snaps the
+        robot to its home configuration and re-references the phone pose on demand.
+      </p>
+
+      <div class="img-grid">
+        <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" />
+        <img src="../assets/projects/cds235/reset.png" alt="Reset behavior joint trajectories" />
+      </div>
+
+      <div class="img-full">
+        <img src="../assets/projects/cds235/dashboard.png" alt="Live telemetry debug dashboard" />
+      </div>
+      <p style="font-size:.85rem; color:var(--color-muted); margin-top:-8px;">
+        Web-based debug dashboard displaying live joint angles, manipulability bar, twist magnitude,
+        joint limit proximity, and system status — updated in real time over WebSocket.
+      </p>
+
+      <!-- SHORTCOMINGS -->
+      <h2>Shortcomings &amp; Future Work</h2>
+      <ul>
+        <li><strong>Simulation only</strong> — the system was not validated on physical hardware.</li>
+        <li><strong>VIO drift</strong> — ARKit pose estimates accumulate error in feature-poor environments.</li>
+        <li><strong>No collision avoidance</strong> — joint trajectories do not account for obstacles.</li>
+        <li><strong>Future:</strong> Real UR10e integration, gripper/grasping support, trajectory smoothing,
+          multi-user teleoperation, and online drift correction.</li>
+      </ul>
+
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

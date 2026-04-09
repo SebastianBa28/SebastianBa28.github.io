@@ -1,0 +1,10 @@
+\section{Project Overview}
+In this project, we develop a teleoperation system for the UR10e 6-DOF manipulator using an iPhone as the input device. The phone's pose, tracked by Apple's ARKit framework, drives the robot through two control modes:
+\begin{itemize}
+    \item \textbf{Velocity mode}: The phone's instantaneous twist (linear and angular velocity) is mapped to joint velocities via resolved-rate control using the geometric Jacobian with adaptive damped least-squares inversion.
+    \item \textbf{Position mode}: The phone's relative displacement from a reference pose is mapped to a target end-effector pose, which is reached via analytical closed-form inverse kinematics.
+\end{itemize}
+
+The system operates in simulation, with the robot visualized in RViz~2. Real-time feedback---including manipulability, joint limit proximity, and feasibility---is computed by the kinematics node and sent back to the phone, where it is displayed through visual indicators and haptic feedback.
+
+The project builds directly on the kinematic foundations developed throughout ME/CDS/EE~235a: Denavit-Hartenberg parameterization, forward kinematics, the geometric Jacobian, resolved-rate control, and analytical inverse kinematics for the UR10e. The contribution of this work is the integration of these techniques into a real-time teleoperation pipeline driven by smartphone pose estimation.

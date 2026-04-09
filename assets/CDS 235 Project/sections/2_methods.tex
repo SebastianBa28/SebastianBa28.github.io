@@ -1,0 +1,253 @@
+\section{Implementation Details}
+
+\subsection{Pose Estimation via Visual-Inertial Odometry}
+
+The iPhone's pose is estimated by Apple's ARKit framework~\cite{apple_arkit} using \textbf{visual-inertial odometry (VIO)}, an algorithm closely related to the Multi-State Constraint Kalman Filter (MSCKF)~\cite{mourikis2007, li2013}. VIO fuses two complementary sensor systems to produce a 6-DOF pose estimate at approximately 60~Hz.
+
+\subsubsection{Inertial Odometry}
+
+The phone's IMU provides accelerometer readings $\mathbf{a}_b$ and gyroscope readings $\boldsymbol{\omega}_b$ in the body frame at high frequency ($\sim$100--1000~Hz). The IMU state is propagated by integration:
+\begin{align}
+    \dot{\mathbf{q}} &= \frac{1}{2} \mathbf{q} \otimes \boldsymbol{\omega}_b \label{eq:imu_orient} \\
+    \dot{\mathbf{v}} &= \mathbf{R}(\mathbf{q})\,\mathbf{a}_b - \mathbf{g} \label{eq:imu_vel} \\
+    \dot{\mathbf{p}} &= \mathbf{v} \label{eq:imu_pos}
+\end{align}
+where $\mathbf{q}$ is the orientation quaternion, $\mathbf{R}(\mathbf{q})$ is the corresponding rotation matrix, $\mathbf{g}$ is gravity, and $\mathbf{v}$, $\mathbf{p}$ are velocity and position in the world frame. IMU measurements are corrupted by bias terms $\mathbf{b}_a$, $\mathbf{b}_g$ that drift slowly over time. The double integration of noisy accelerometer data causes position drift that grows quadratically, making inertial odometry alone insufficient for sustained tracking.
+
+\subsubsection{Visual Odometry}
+
+At each camera frame ($\sim$30--60~Hz), visual features (corners, edges) are extracted and tracked across consecutive frames using descriptor matching. These feature correspondences provide geometric constraints between camera poses via epipolar geometry. While visual odometry is more accurate over long time horizons than inertial integration, it is computationally slower and sensitive to motion blur and textureless environments.
+
+\subsubsection{Sensor Fusion via Error-State EKF}
+
+The MSCKF-style filter maintains a state vector containing:
+\begin{equation}
+    \mathbf{x} = \begin{bmatrix} \mathbf{q} & \mathbf{b}_g & \mathbf{v} & \mathbf{b}_a & \mathbf{p} & \mathbf{q}_{C_1} & \mathbf{p}_{C_1} & \cdots & \mathbf{q}_{C_N} & \mathbf{p}_{C_N} \end{bmatrix}^\top
+\end{equation}
+where $(\mathbf{q}_{C_i}, \mathbf{p}_{C_i})$ is a sliding window of $N$ recent camera poses. Crucially, \emph{feature positions are not included in the state vector}. Instead, when a feature is tracked across multiple frames, its observations impose probabilistic constraints between the camera poses in the sliding window. This makes the filter computationally efficient, as the state vector size depends only on the window length, not the number of features.
+
+The filter operates in two steps:
+\begin{enumerate}
+    \item \textbf{Propagation}: IMU measurements predict the state forward between camera frames using Equations~\eqref{eq:imu_orient}--\eqref{eq:imu_pos}.
+    \item \textbf{Update}: When features are observed across multiple frames, their measurements correct the predicted state via an EKF update step, compensating for IMU drift.
+\end{enumerate}
+
+On devices equipped with LiDAR (iPhone Pro, iPad Pro), depth measurements at $256 \times 192$ resolution resolve the scale ambiguity inherent in monocular vision and improve accuracy along the depth axis.
+
+\subsubsection{Twist Computation}
+
+ARKit outputs the camera pose as a $4 \times 4$ homogeneous transformation $\mathbf{T}_k \in SE(3)$ at each frame. Our system computes the twist (body velocity) from consecutive poses:
+\begin{align}
+    \mathbf{v} &= \frac{\mathbf{p}_k - \mathbf{p}_{k-1}}{\Delta t}, \qquad
+    \boldsymbol{\omega} = \frac{\theta \, \hat{\mathbf{n}}}{\Delta t}
+\end{align}
+where $\theta$ and $\hat{\mathbf{n}}$ are the angle and axis of the relative rotation $\mathbf{R}_k \mathbf{R}_{k-1}^\top$, extracted via the quaternion representation.
+
+
+\subsection{Coordinate Frame Mapping}
+\label{sec:frame_mapping}
+
+A significant challenge in this project was mapping between the ARKit coordinate frame and the robot's coordinate frame.
+
+\subsubsection{ARKit World Frame}
+
+ARKit's world tracking uses gravity alignment: the $Y$-axis points up (aligned with gravity), while $X$ and $Z$ are horizontal, with their orientation determined by the device's heading at session initialization. This world frame is fixed for the duration of the AR session.
+
+\subsubsection{Reference-Relative Twist}
+
+The twist computed in Section~2.1 is expressed in the ARKit world frame. However, for intuitive teleoperation, movements should be relative to the phone's orientation at the time of reset or session start. For example, ``move right'' should always correspond to the same robot axis regardless of which compass direction the phone faces.
+
+We solve this by rotating the twist into the reference pose's local frame before axis remapping:
+\begin{equation}
+    \begin{bmatrix} \mathbf{v}_\text{local} \\ \boldsymbol{\omega}_\text{local} \end{bmatrix}
+    = \begin{bmatrix} \mathbf{R}_\text{ref}^\top & \mathbf{0} \\ \mathbf{0} & \mathbf{R}_\text{ref}^\top \end{bmatrix}
+    \begin{bmatrix} \mathbf{v}_\text{world} \\ \boldsymbol{\omega}_\text{world} \end{bmatrix}
+    \label{eq:twist_rotation}
+\end{equation}
+where $\mathbf{R}_\text{ref}$ is the rotation component of the reference pose captured at reset. Since $\mathbf{R}_\text{ref}$ is orthogonal, $\mathbf{R}_\text{ref}^\top = \mathbf{R}_\text{ref}^{-1}$.
+
+\subsubsection{Axis Remapping}
+
+The phone and robot use different coordinate conventions. We define a configurable permutation-and-sign mapping via a matrix $\mathbf{P}$ that maps ARKit axes to robot axes:
+\begin{equation}
+    \mathbf{v}_\text{robot} = \mathbf{P} \, \mathbf{v}_\text{local}, \qquad
+    \mathbf{R}_\text{robot} = \mathbf{P} \, \mathbf{R}_\text{local} \, \mathbf{P}^\top
+\end{equation}
+The default mapping is: robot $X \leftarrow$ phone $-Z$, robot $Y \leftarrow$ phone $-X$, robot $Z \leftarrow$ phone $+Y$.
+
+\subsubsection{Relative Transform for Position Mode}
+
+In position mode, the relative displacement from the reference pose is computed as:
+\begin{equation}
+    \mathbf{T}_\text{rel} = \mathbf{T}_\text{ref}^{-1} \, \mathbf{T}_\text{current}
+\end{equation}
+This transform is expressed in the reference frame's coordinates, then remapped to the robot frame and applied to the reference end-effector pose:
+\begin{equation}
+    \mathbf{T}_\text{target} = \mathbf{T}_\text{ee,ref} \, \mathbf{T}_\text{rel,robot}
+\end{equation}
+
+
+\subsection{Velocity Mode: Resolved-Rate Control}
+
+In velocity mode, the phone's twist is mapped to joint velocities via the geometric Jacobian.
+
+\subsubsection{Forward Kinematics and Jacobian}
+
+The UR10e is parameterized using the standard Denavit-Hartenberg convention~\cite{murray1994}. Each joint's homogeneous transform is:
+\begin{equation}
+    \mathbf{A}_i = \begin{bmatrix}
+        c_{\theta_i} & -s_{\theta_i} c_{\alpha_i} & s_{\theta_i} s_{\alpha_i} & a_i c_{\theta_i} \\
+        s_{\theta_i} & c_{\theta_i} c_{\alpha_i} & -c_{\theta_i} s_{\alpha_i} & a_i s_{\theta_i} \\
+        0 & s_{\alpha_i} & c_{\alpha_i} & d_i \\
+        0 & 0 & 0 & 1
+    \end{bmatrix}
+    \label{eq:dh_transform}
+\end{equation}
+The DH parameters for the UR10e are given in Table~\ref{tab:dh}.
+
+\begin{table}[H]
+\centering
+\caption{UR10e DH Parameters (standard convention).}
+\label{tab:dh}
+\begin{tabular}{@{}crrr@{}}
+\toprule
+Joint & $a_i$ [m] & $d_i$ [m] & $\alpha_i$ [rad] \\
+\midrule
+1 & 0 & 0.1807 & $\pi/2$ \\
+2 & $-0.6127$ & 0 & 0 \\
+3 & $-0.57155$ & 0 & 0 \\
+4 & 0 & 0.17415 & $\pi/2$ \\
+5 & 0 & 0.11985 & $-\pi/2$ \\
+6 & 0 & 0.11655 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The forward kinematics chain gives $\mathbf{T}_0^i = \mathbf{A}_1 \cdots \mathbf{A}_i$ for each frame. The $6 \times 6$ geometric Jacobian is constructed column-wise:
+\begin{equation}
+    \mathbf{J}_i = \begin{bmatrix} \hat{\mathbf{z}}_{i-1} \times (\mathbf{o}_6 - \mathbf{o}_{i-1}) \\ \hat{\mathbf{z}}_{i-1} \end{bmatrix}, \quad i = 1, \ldots, 6
+    \label{eq:jacobian}
+\end{equation}
+where $\hat{\mathbf{z}}_{i-1}$ is the joint axis and $\mathbf{o}_{i-1}$ is the origin of frame $i-1$.
+
+\subsubsection{Damped Least-Squares Inverse}
+
+The joint velocities are computed via the damped least-squares (DLS) pseudoinverse:
+\begin{equation}
+    \dot{\mathbf{q}} = \mathbf{J}^\top \left( \mathbf{J} \mathbf{J}^\top + \lambda^2 \mathbf{I} \right)^{-1} \dot{\mathbf{x}}
+    \label{eq:dls}
+\end{equation}
+where $\dot{\mathbf{x}} = [\mathbf{v}^\top, \boldsymbol{\omega}^\top]^\top$ is the desired task-space twist and $\lambda$ is a damping factor.
+
+\subsubsection{Adaptive Damping}
+
+The damping factor adapts based on the Yoshikawa manipulability measure~\cite{yoshikawa1985}:
+\begin{equation}
+    \mu = \sqrt{\det(\mathbf{J} \mathbf{J}^\top)}
+    \label{eq:manipulability}
+\end{equation}
+As $\mu \to 0$ (approaching a singularity), $\lambda$ increases to prevent large joint velocities:
+\begin{equation}
+    \lambda(\mu) = \begin{cases}
+        \lambda_\text{min} & \text{if } \mu > \mu_\text{thresh}} \\
+        \lambda_\text{min} + \left(1 - \frac{\mu}{\mu_\text{thresh}}\right)(\lambda_\text{max} - \lambda_\text{min}) & \text{otherwise}
+    \end{cases}
+    \label{eq:adaptive_damping}
+\end{equation}
+with $\lambda_\text{min} = 0.001$, $\lambda_\text{max} = 0.1$, and $\mu_\text{thresh} = 0.01$.
+
+\subsubsection{Twist Filtering}
+
+The twist from ARKit is computed via finite differencing of consecutive poses, which produces noisy velocity estimates. To smooth the input before it enters the resolved-rate solver, we apply an exponential moving average (EMA) filter:
+\begin{equation}
+    \dot{\mathbf{x}}_k = \alpha \, \dot{\mathbf{x}}_\text{raw} + (1 - \alpha) \, \dot{\mathbf{x}}_{k-1}
+    \label{eq:ema}
+\end{equation}
+with $\alpha = 0.3$. This attenuates high-frequency jitter while preserving the operator's intended motion, at the cost of a slight increase in effective latency.
+
+
+\subsubsection{Integration and Limits}
+
+Joint positions are updated via Euler integration:
+\begin{equation}
+    \mathbf{q}_{k+1} = \mathbf{q}_k + \dot{\mathbf{q}}_k \, \Delta t
+\end{equation}
+Joint velocities are clamped to $\pm\pi$~rad/s (joints 1--3) and $\pm 2\pi$~rad/s (joints 4--6), and joint positions are clamped to $[-2\pi, 2\pi]$.
+
+
+\subsection{Position Mode: Analytical Inverse Kinematics}
+
+In position mode, the target end-effector pose is reached via analytical closed-form inverse kinematics, adapted from Lab~2 of this course.
+
+\subsubsection{Solution Method}
+
+Given a target pose $\mathbf{T}_\text{target} \in SE(3)$, we solve for the joint angles $\theta_1, \ldots, \theta_6$ sequentially using the UR10e's geometric structure:
+
+\begin{enumerate}
+    \item \textbf{$\theta_1$}: Solved from the target position's $x$-$y$ components using the half-angle substitution $t = \tan(\theta/2)$, yielding up to 2 solutions from a quadratic in $t$.
+    \item \textbf{$\theta_5$, $\theta_6$}: Solved from the target orientation matrix entries that depend on $\theta_1$.
+    \item \textbf{$\theta_2$}: Solved via another half-angle substitution using the remaining position constraints, yielding up to 2 additional solutions per $\theta_1$.
+    \item \textbf{$\theta_3$, $\theta_4$}: Solved in closed form from the remaining geometric constraints.
+\end{enumerate}
+
+This yields up to 8 solutions per target pose. Each solution undergoes a safety check: the forward kinematics chain is evaluated, and any solution where an intermediate frame falls below the ground plane ($z < 0$) is discarded.
+
+\subsubsection{Solution Selection}
+
+Among the valid solutions, we prefer \emph{elbow-up} configurations. Elbow-up configurations reduce the risk of intermediate joint frames passing through the ground plane, which is both physically impossible and a safety hazard on real hardware. For UR-series robots, the elbow-up vs.\ elbow-down configuration is determined by the sign of the elbow joint angle~\cite{williams_ur_kinematics}: a solution is classified as elbow-up if
+\begin{equation}
+    \theta_3 > 0
+\end{equation}
+
+Among elbow-up solutions, we select the one closest to the current joint configuration in the wrapped angular distance sense:
+\begin{equation}
+    d(\mathbf{q}_\text{sol}, \mathbf{q}_\text{current}) = \left\| \text{atan2}\!\left(\sin(\mathbf{q}_\text{sol} - \mathbf{q}_\text{current}),\, \cos(\mathbf{q}_\text{sol} - \mathbf{q}_\text{current})\right) \right\|
+\end{equation}
+If no elbow-up solutions exist, we fall back to the closest solution overall.
+
+
+\subsection{System Architecture}
+
+The system consists of three components communicating over WebSocket:
+
+\begin{enumerate}
+    \item \textbf{iOS App} (Swift/SwiftUI): The \texttt{ARSessionManager} captures ARKit poses and computes twist. The \texttt{TeleopManager} coordinates AR tracking, reference pose management, frame rotation, and axis remapping. The \texttt{WebSocketManager} handles bidirectional communication with the server.
+
+    \item \textbf{FastAPI Relay Server} (Python): A lightweight WebSocket relay with no kinematics computation. It forwards teleop messages from the iOS app to the ROS node and relays feedback in the reverse direction. It also hosts a web-based debug dashboard with live charts.
+
+    \item \textbf{ROS~2 Kinematics Node} (Python, ROS~2 Jazzy): Runs a 30~Hz timer callback that performs either resolved-rate or analytical IK depending on the control mode. Publishes \texttt{JointState} messages for \texttt{robot\_state\_publisher} and RViz. Communicates with the server via a background WebSocket thread.
+\end{enumerate}
+
+All messages use JSON encoding. The teleop message contains the twist vector, the $4 \times 4$ relative transform (row-major), the control mode, and an optional command field (e.g., ``reset'').
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    box/.style={rectangle, draw=black!60, fill=blue!8, rounded corners=4pt,
+                text width=3.2cm, align=center, minimum height=1.8cm,
+                font=\small\sffamily},
+    arr/.style={->, >=Stealth, semithick},
+]
+    \node[box] (ios) {iOS App\\[2pt]\scriptsize Swift + ARKit\\VIO pose tracking};
+    \node[box, right=2.2cm of ios] (server) {FastAPI\\Relay Server\\[2pt]\scriptsize WebSocket relay\\+ dashboard};
+    \node[box, right=2.2cm of server] (ros) {ROS 2\\Kinematics Node\\[2pt]\scriptsize IK + RViz\\+ rosbag};
+
+    \draw[arr] ([yshift=3pt]ios.east) -- node[above, font=\scriptsize] {twist, transform} ([yshift=3pt]server.west);
+    \draw[arr] ([yshift=-3pt]server.west) -- node[below, font=\scriptsize] {feedback} ([yshift=-3pt]ios.east);
+    \draw[arr] ([yshift=3pt]server.east) -- node[above, font=\scriptsize] {relay} ([yshift=3pt]ros.west);
+    \draw[arr] ([yshift=-3pt]ros.west) -- node[below, font=\scriptsize] {state + feedback} ([yshift=-3pt]server.east);
+\end{tikzpicture}
+\caption{System architecture. The iOS app streams pose data over WebSocket to a relay server, which forwards it to the ROS~2 kinematics node. Feedback flows in the reverse direction.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Feedback System}
+
+The kinematics node computes and sends feedback to the iOS app at 30~Hz:
+\begin{itemize}
+    \item \textbf{Manipulability} $\mu$: Yoshikawa measure (Equation~\ref{eq:manipulability}), indicating proximity to singularities.
+    \item \textbf{Joint limit proximity}: Per-joint normalized distance to the nearest limit, where $0 =$ center of range and $1 =$ at limit.
+    \item \textbf{Workspace proximity}: End-effector distance as a fraction of the UR10e's maximum reach ($\sim$1.18~m).
+    \item \textbf{Feasibility}: Boolean flag, true when $\mu > 0.005$ and all joints are within limits.
+\end{itemize}
+The iOS app renders this as color-coded indicators (green/yellow/red) and maps manipulability to haptic vibration intensity, providing the operator with tactile awareness of the robot's kinematic state.
