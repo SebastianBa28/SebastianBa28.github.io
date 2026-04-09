@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
 </head>
 <body class="project-page">
 
@@ -123,12 +124,10 @@
       <p>
         The angular Jacobian rows for tilt and roll are derived analytically from joint coupling:
       </p>
-      <div class="code-block"><span class="comment">// Tilt and Roll Jacobian rows (appended below Cartesian J)</span>
-<span class="accent">J_tilt</span>  = [  0,  1, -1,  1,  0 ]   <span class="comment">// base, shoulder, elbow, wrist-tilt, wrist-roll</span>
-<span class="accent">J_roll</span>  = [ -1,  0,  0,  0,  1 ]
-
-<span class="comment">// Wrist roll is solved analytically after NR:</span>
-<span class="accent">q_wrist_roll</span> = θ_roll_desired + q_base</div>
+      <div class="math-display">
+        \[J_\text{tilt} = \begin{bmatrix} 0 &amp; 1 &amp; -1 &amp; 1 &amp; 0 \end{bmatrix}, \qquad J_\text{roll} = \begin{bmatrix} -1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix}\]
+        \[q_{\text{wrist roll}} = \theta_{\text{roll,desired}} + q_{\text{base}}\]
+      </div>
       <p>
         Inverse kinematics is solved with <strong>Newton-Raphson iteration</strong> on the 4-DOF task
         (x, y, z, θ<sub>tilt</sub>), using a <strong>damped pseudoinverse via SVD</strong> — singular values
@@ -152,16 +151,15 @@
         A static multi-body torque model cancels gravitational loading at the shoulder, elbow, and wrist-tilt
         joints. Per-joint moment coefficients aggregate link mass and total distal mass:
       </p>
-      <div class="code-block"><span class="comment">// Moment coefficient for joint i</span>
-<span class="accent">C_i</span> = g · (m_i · d_i  +  W_distal · L_i)
-
-<span class="comment">// Recursive gravitational torques (wrist → elbow → shoulder)</span>
-<span class="accent">τ_g,w</span> = C₃ · sin(θ₁₂₃)
-<span class="accent">τ_g,e</span> = C₂ · sin(θ₁₂) + τ_g,w
-<span class="accent">τ_g,s</span> = C₁ · sin(θ₁)  + τ_g,e
-
-<span class="comment">// Commanded motor torque (d_i = direction sign)</span>
-<span class="accent">τ_motor,i</span> = −d_i · τ_g,i</div>
+      <div class="math-display">
+        \[C_i = g\bigl(m_i\,d_i + W_\text{distal}\,L_i\bigr)\]
+        \[\begin{aligned}
+          \tau_{g,w} &amp;= C_3\sin(\theta_{123}) \\[4pt]
+          \tau_{g,e} &amp;= C_2\sin(\theta_{12}) + \tau_{g,w} \\[4pt]
+          \tau_{g,s} &amp;= C_1\sin(\theta_1) + \tau_{g,e}
+        \end{aligned}\]
+        \[\tau_{\text{motor},i} = -d_i\,\tau_{g,i}\]
+      </div>
 
       <h3>Calibration Error Maps</h3>
       <p>
@@ -441,5 +439,13 @@
   </div>
 
   <script src="../js/main.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '\\\\[', right: '\\\\]', display: true},
+        {left: '\\\\(', right: '\\\\)', display: false}
+      ]
+    });"></script>
 </body>
 </html>

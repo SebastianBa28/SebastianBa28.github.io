@@ -1144,6 +1144,14 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
 .code-block .comment { color: rgba(255,255,255,.4); }
 .code-block .accent { color: var(--color-accent); }
 
+/* KaTeX math display blocks */
+.math-display {
+  margin: 20px 0;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+.math-display .katex-display { margin: 10px 0; }
+
 /* pipeline flow — horizontal step list */
 .pipeline {
   display: flex;

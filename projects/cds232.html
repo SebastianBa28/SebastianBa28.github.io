@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
 </head>
 <body class="project-page">
 
@@ -54,15 +55,14 @@
       </div>
 
       <p>The equations of motion follow directly from Newton-Euler rigid body dynamics:</p>
-      <div class="code-block"><span class="comment">// Translational dynamics</span>
-m · ẍ  =  <span class="accent">−(u₁ + u₂) · sin(θ)</span>
-m · ÿ  =  <span class="accent"> (u₁ + u₂) · cos(θ)</span>  −  m · g
-
-<span class="comment">// Rotational dynamics</span>
-I · θ̈  =  <span class="accent">r · (u₁ − u₂)</span>
-
-<span class="comment">// State vector</span>
-x  =  [ x,  ẋ,  y,  ẏ,  θ,  θ̇ ]<sup>T</sup>   ∈  ℝ⁶</div>
+      <div class="math-display">
+        \[\begin{aligned}
+          m\ddot{x} &amp;= -(u_1 + u_2)\sin\theta \\[6pt]
+          m\ddot{y} &amp;= (u_1 + u_2)\cos\theta - mg \\[6pt]
+          I\ddot{\theta} &amp;= r\,(u_1 - u_2)
+        \end{aligned}\]
+        \[\mathbf{x} = \bigl[\,x,\;\dot{x},\;y,\;\dot{y},\;\theta,\;\dot{\theta}\,\bigr]^\top \in \mathbb{R}^6\]
+      </div>
 
       <!-- TRAJECTORY TRACKING CONTROLLER -->
       <h2>Trajectory Tracking Controller</h2>
@@ -77,18 +77,12 @@ x  =  [ x,  ẋ,  y,  ẏ,  θ,  θ̇ ]<sup>T</sup>   ∈  ℝ⁶</div>
       <p>
         Defining the tracking error <em>e = x − x<sub>ref</sub></em>, the error dynamics are:
       </p>
-      <div class="code-block"><span class="comment">// Error dynamics (linearized about reference)</span>
-ė  =  A · e  +  B · u_e
-
-<span class="comment">// Jacobians evaluated at reference trajectory</span>
-A  =  ∂f/∂x |<sub>x_ref, u_ref</sub>       <span class="comment">% 6×6</span>
-B  =  ∂f/∂u |<sub>x_ref, u_ref</sub>       <span class="comment">% 6×2</span>
-
-<span class="comment">// LQR: solve Riccati equation for optimal gain K</span>
-K  =  <span class="accent">lqr</span>(A, B, Q, R)
-
-<span class="comment">// Final control law</span>
-u  =  u_ref  −  K · e</div>
+      <div class="math-display">
+        \[\dot{e} = Ae + Bu_e\]
+        \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \in \mathbb{R}^{6\times6}, \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \in \mathbb{R}^{6\times2}\]
+        \[K = \operatorname{lqr}(A,\,B,\,Q,\,R)\]
+        \[u = u_\text{ref} - Ke\]
+      </div>
 
       <h3>Trajectory &amp; Tracking Results</h3>
       <div class="img-grid">
@@ -113,18 +107,12 @@ u  =  u_ref  −  K · e</div>
       </p>
 
       <h3>Formulation</h3>
-      <div class="code-block"><span class="comment">// Safety function: signed distance to obstacle boundary</span>
-h(x)  =  ‖x_pos − x_obs‖  −  D_obs        <span class="comment">% positive ↔ safe</span>
-
-<span class="comment">// Relative degree 2 → extend via Lie derivative</span>
-h_e(x, v)  =  ḣ(x, v)  +  γ₁ · h(x)
-
-<span class="comment">// Safety constraint on acceleration input</span>
-ḣ_e(x, v, a)  ≥  −γ₂ · h_e(x, v)
-
-<span class="comment">// QP: minimally deviate from nominal LQR control</span>
-u*  =  <span class="accent">argmin</span>  ½‖u − u_nom‖²
-        subject to  CBF constraint</div>
+      <div class="math-display">
+        \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
+        \[h_e(\mathbf{x},\,v) = \dot{h}(\mathbf{x},\,v) + \gamma_1\,h(\mathbf{x})\]
+        \[\dot{h}_e(\mathbf{x},\,v,\,a) \geq -\gamma_2\,h_e(\mathbf{x},\,v)\]
+        \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
+      </div>
 
       <h3>Avoidance Results</h3>
       <p>
@@ -166,5 +154,13 @@ u*  =  <span class="accent">argmin</span>  ½‖u − u_nom‖²
   </div>
 
   <script src="../js/main.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '\\\\[', right: '\\\\]', display: true},
+        {left: '\\\\(', right: '\\\\)', display: false}
+      ]
+    });"></script>
 </body>
 </html>
