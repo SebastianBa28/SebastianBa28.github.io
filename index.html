@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sebastian Banuelos — Engineering Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ======================================================
+       NAV
+  ======================================================= -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="#hero" class="nav__logo">Sebastian Banuelos</a>
+      <ul class="nav__links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#coursework">Coursework</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="nav__hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ======================================================
+       HERO
+  ======================================================= -->
+  <section id="hero" class="hero">
+    <div class="container">
+      <div class="hero__inner">
+        <div class="hero__text">
+          <p class="hero__greeting">Engineering Portfolio</p>
+          <h1 class="hero__name">Sebastian<br>Banuelos</h1>
+          <p class="hero__title">Mechanical Engineering @ Caltech &nbsp;·&nbsp; Controls &amp; GNC</p>
+          <p class="hero__bio">
+            Fourth-year ME student at Caltech focused on control theory, mathematical
+            optimization, and robotic planning. Passionate about applying these skills
+            to guidance, navigation, and control systems in aerospace.
+          </p>
+          <div class="hero__stats">
+            <div class="hero__stat">
+              <div class="hero__stat-value">NASA JPL</div>
+              <div class="hero__stat-label">GNC Intern</div>
+            </div>
+            <div class="hero__stat">
+              <div class="hero__stat-value">11</div>
+              <div class="hero__stat-label">Projects</div>
+            </div>
+            <div class="hero__stat">
+              <div class="hero__stat-value">29+</div>
+              <div class="hero__stat-label">Courses</div>
+            </div>
+            <div class="hero__stat">
+              <div class="hero__stat-value">2×</div>
+              <div class="hero__stat-label">State Champion</div>
+            </div>
+          </div>
+          <div class="hero__actions">
+            <a href="#projects" class="btn btn--primary">View Projects</a>
+            <a href="assets/Sebastian_Banuelos_CV.pdf" class="btn btn--outline" target="_blank">Download CV</a>
+          </div>
+        </div>
+        <div class="hero__photo">
+          <img src="assets/profile.png" alt="Sebastian Banuelos" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       ABOUT
+  ======================================================= -->
+  <section id="about">
+    <div class="container">
+      <p class="section-label">About Me</p>
+      <h2 class="section-title">A bit about myself</h2>
+      <div class="about__inner reveal">
+        <div class="about__bio">
+          <p>
+            My name is Sebastian — I am a fourth-year Mechanical Engineering student at
+            Caltech with a minor in Controls and Dynamical Systems. Through my coursework
+            and work experience I have developed a solid foundation in control theory,
+            mathematical optimization, and robotic planning. I am particularly interested
+            in applying these skills to the design and implementation of guidance, navigation,
+            and control (GNC) systems in aerospace.
+          </p>
+          <p>
+            Outside of engineering I enjoy cycling through scenic landscapes, theatre and
+            modern dance, and reading science fiction — particularly Isaac Asimov and Philip K. Dick.
+            I am fluent in both English and Spanish.
+          </p>
+        </div>
+        <div class="about__facts">
+          <div class="about__facts-title">Quick Facts</div>
+          <div class="about__fact">
+            <div class="about__fact-label">Institution</div>
+            <div class="about__fact-value">California Institute of Technology</div>
+          </div>
+          <div class="about__fact">
+            <div class="about__fact-label">Degree</div>
+            <div class="about__fact-value">BS Mechanical Engineering</div>
+          </div>
+          <div class="about__fact">
+            <div class="about__fact-label">Minor</div>
+            <div class="about__fact-value">Controls &amp; Dynamical Systems</div>
+          </div>
+          <div class="about__fact">
+            <div class="about__fact-label">Focus</div>
+            <div class="about__fact-value">GNC · Robotics · Optimal Control</div>
+          </div>
+          <div class="about__fact">
+            <div class="about__fact-label">Languages</div>
+            <div class="about__fact-value">English · Spanish</div>
+          </div>
+          <div class="about__fact">
+            <div class="about__fact-label">Interests</div>
+            <div class="about__fact-value">Cycling · Theatre · Sci-fi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       EXPERIENCE
+  ======================================================= -->
+  <section id="experience">
+    <div class="container">
+      <p class="section-label">Work Experience</p>
+      <h2 class="section-title">Where I've worked</h2>
+      <div class="timeline">
+
+        <div class="timeline__item reveal">
+          <div class="timeline__dot"></div>
+          <div class="timeline__card">
+            <div class="timeline__date">2025</div>
+            <div class="timeline__company">NASA Jet Propulsion Laboratory</div>
+            <div class="timeline__role">GNC Intern — Characterized rotor aerodynamics for the next-generation Mars Helicopter</div>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal">
+          <div class="timeline__dot"></div>
+          <div class="timeline__card">
+            <div class="timeline__date">2025 – Present</div>
+            <div class="timeline__company">California Institute of Technology</div>
+            <div class="timeline__role">Teaching Assistant</div>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal">
+          <div class="timeline__dot"></div>
+          <div class="timeline__card">
+            <div class="timeline__date">2024 – Present</div>
+            <div class="timeline__company">PARSEC Rocketry Club</div>
+            <div class="timeline__role">GNC Subteam Lead — Leading guidance, navigation &amp; control development for student rocketry</div>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal">
+          <div class="timeline__dot"></div>
+          <div class="timeline__card">
+            <div class="timeline__date">2024</div>
+            <div class="timeline__company">VERTIV</div>
+            <div class="timeline__role">Mechanical Engineering Intern</div>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal">
+          <div class="timeline__dot"></div>
+          <div class="timeline__card">
+            <div class="timeline__date">2023</div>
+            <div class="timeline__company">California Institute of Technology — Gharib Research Group</div>
+            <div class="timeline__role">Summer Undergraduate Research Fellow (SURF) — Fluid dynamics research on vortex formation for micro-aerial vehicles</div>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal">
+          <div class="timeline__dot"></div>
+          <div class="timeline__card">
+            <div class="timeline__date">2022 – 2026</div>
+            <div class="timeline__company">California Institute of Technology</div>
+            <div class="timeline__role">BS Mechanical Engineering · Minor in Controls &amp; Dynamical Systems</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       PROJECTS
+  ======================================================= -->
+  <section id="projects">
+    <div class="container">
+      <p class="section-label">Recent Work</p>
+      <h2 class="section-title">Projects</h2>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="controls">Controls &amp; GNC</button>
+        <button class="tab-btn" data-filter="mechanical">Mechanical</button>
+        <button class="tab-btn" data-filter="robotics">Robotics</button>
+        <button class="tab-btn" data-filter="research">Research</button>
+      </div>
+
+      <div class="projects-grid">
+
+        <!-- Featured -->
+        <a href="projects/chopper.html" class="card card--featured reveal" data-category="controls">
+          <img class="card__cover" src="assets/projects/chopper/WhatsApp_Image_2025-10-01_at_7.41.45_PM.jpeg" alt="CHOPPER" />
+          <div class="card__body">
+            <div class="card__badge">★ Featured — NASA JPL</div>
+            <span class="card__tag">NASA JPL · 2025</span>
+            <div class="card__title">CHOPPER Rotor Interaction Characterization</div>
+            <div class="card__desc">Experimental study of rotor aerodynamics for the next-gen Mars Helicopter — characterizing up to 25% thrust reduction under adverse flight conditions using an underwater analog experiment to match Martian flow regimes.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/cds232.html" class="card reveal" data-category="controls">
+          <img class="card__cover" src="assets/CDS%20232%20Report/figures/cp4/Barrier1.png" alt="CBF Obstacle Avoidance" />
+          <div class="card__body">
+            <span class="card__tag">Caltech · CDS 232 · 2026</span>
+            <div class="card__title">CDS 232 — Planar Drone: Dynamics &amp; Control</div>
+            <div class="card__desc">Nonlinear dynamics, LQR trajectory tracking, Lyapunov stability analysis, and safety-critical obstacle avoidance via Control Barrier Functions.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/me134.html" class="card reveal" data-category="controls robotics">
+          <img class="card__cover" src="assets/projects/me134/dashboard.png" alt="Block Assembler Robot" />
+          <div class="card__body">
+            <span class="card__tag">Caltech · ME 134 · 2026</span>
+            <div class="card__title">ME 134 — Block Assembler Robot</div>
+            <div class="card__desc">Autonomous 5-DOF robot that builds any user-specified 3D magnetic block structure from a JSON config — state-invariant and memoryless, with Bayesian voxel perception, ROS 2 architecture, and an AI design agent.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/ae103a.html" class="card reveal" data-category="controls">
+          <img class="card__cover" src="assets/projects/ae103a/image.png" alt="CubeSat ADCS" />
+          <div class="card__body">
+            <span class="card__tag">Caltech</span>
+            <div class="card__title">Ae 103a — CubeSat ADCS</div>
+            <div class="card__desc">Attitude Determination &amp; Control System using quaternion kinematics, Kalman filter state estimation, and LQR pointing control in Simulink.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/ae103b.html" class="card reveal" data-category="controls">
+          <img class="card__cover" src="assets/projects/ae103b/image.png" alt="Drone Trajectory" />
+          <div class="card__body">
+            <span class="card__tag">Caltech</span>
+            <div class="card__title">Ae 103b — Drone Trajectory Planning</div>
+            <div class="card__desc">Minimum-snap trajectory generation via quadratic programming, with 6-DOF PID control and disturbance rejection under wind gusts.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/me72.html" class="card reveal" data-category="mechanical robotics">
+          <img class="card__cover" src="assets/projects/me72/image.png" alt="RoboHockey" />
+          <div class="card__body">
+            <span class="card__tag">Caltech</span>
+            <div class="card__title">ME 72 — RoboHockey</div>
+            <div class="card__desc">Designed three competition robots featuring a turret-style shooter, roller intake, and odometry-based automated targeting.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/me14.html" class="card reveal" data-category="mechanical">
+          <img class="card__cover" src="assets/projects/me14/WhatsApp_Image_2024-09-26_at_7.17.38_PM.jpeg" alt="Transmission" />
+          <div class="card__body">
+            <span class="card__tag">Caltech</span>
+            <div class="card__title">ME 14 — Transmission Competition</div>
+            <div class="card__desc">Designed a novel two-speed gearbox using one-way bearings, optimized via MATLAB simulation and fully machined from scratch.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/me8.html" class="card reveal" data-category="robotics controls">
+          <img class="card__cover" src="assets/projects/me8/image.png" alt="Gimbal" />
+          <div class="card__body">
+            <span class="card__tag">Caltech</span>
+            <div class="card__title">ME 8 — Gimbal Tracking System</div>
+            <div class="card__desc">2-axis camera gimbal with PID control, OpenCV face detection, and custom tennis ball tracking via binary masking on Raspberry Pi.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/surf.html" class="card reveal" data-category="research controls">
+          <img class="card__cover" src="assets/projects/surf/image.png" alt="SURF" />
+          <div class="card__body">
+            <span class="card__tag">Caltech — Gharib Lab</span>
+            <div class="card__title">Summer Undergraduate Research Fellow</div>
+            <div class="card__desc">Fluid dynamics research using PIV to study vortex formation over perforated plates for micro-aerial vehicle applications.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/ftc.html" class="card reveal" data-category="robotics">
+          <img class="card__cover" src="assets/projects/ftc/image.png" alt="FTC Robotics" />
+          <div class="card__body">
+            <span class="card__tag">High School — FTC</span>
+            <div class="card__title">FTC Robotics — Back-to-Back State Champions</div>
+            <div class="card__desc">Custom aluminum chassis, belt-drive drivetrain, deformable brush intake, and a cascaded pulley lift. Two-time UIL State Champions.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/asl.html" class="card reveal" data-category="robotics research">
+          <div class="card__cover--placeholder">🤟</div>
+          <div class="card__body">
+            <span class="card__tag">High School — TXSEF</span>
+            <div class="card__title">ASL Interpreter Glove</div>
+            <div class="card__desc">Wearable device with flex sensors and a gyroscope/accelerometer to translate ASL gestures into readable text. Competed at TXSEF.</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SKILLS
+  ======================================================= -->
+  <section id="skills">
+    <div class="container">
+      <p class="section-label">Technical Skills</p>
+      <h2 class="section-title">Tools &amp; Technologies</h2>
+      <div class="skills-grid">
+
+        <div class="skill-group reveal">
+          <div class="skill-group__title">Controls &amp; Simulation</div>
+          <div class="tags">
+            <span class="tag">MATLAB</span>
+            <span class="tag">Simulink</span>
+            <span class="tag">LQR</span>
+            <span class="tag">Kalman Filter</span>
+            <span class="tag">PID</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group__title">Programming</div>
+          <div class="tags">
+            <span class="tag">Python</span>
+            <span class="tag">C++</span>
+            <span class="tag">Java</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group__title">CAD</div>
+          <div class="tags">
+            <span class="tag">SolidWorks</span>
+            <span class="tag">CREO</span>
+            <span class="tag">Fusion 360</span>
+            <span class="tag">OnShape</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group__title">Embedded &amp; Prototyping</div>
+          <div class="tags">
+            <span class="tag">Arduino</span>
+            <span class="tag">Raspberry Pi</span>
+            <span class="tag">Jetson</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group__title">Mechanical Modeling</div>
+          <div class="tags">
+            <span class="tag">ANSYS</span>
+            <span class="tag">FEA</span>
+            <span class="tag">CFD</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group__title">Manufacturing</div>
+          <div class="tags">
+            <span class="tag">GD&amp;T</span>
+            <span class="tag">Machining</span>
+            <span class="tag">3D Printing</span>
+            <span class="tag">Laser Cutting</span>
+          </div>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group__title">Languages</div>
+          <div class="tags">
+            <span class="tag">English</span>
+            <span class="tag">Spanish</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       COURSEWORK
+  ======================================================= -->
+  <section id="coursework">
+    <div class="container">
+      <p class="section-label">Academic Background</p>
+      <h2 class="section-title">Relevant Coursework</h2>
+      <div class="accordion reveal">
+
+        <div class="accordion__item open">
+          <button class="accordion__header">
+            Controls, Robotics &amp; Aerospace
+            <span class="accordion__icon">&#8964;</span>
+          </button>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <span class="course-pill">Ae 103a <span>Aerospace Controls</span></span>
+              <span class="course-pill">Ae 103b <span>Aerospace Controls</span></span>
+              <span class="course-pill">CDS 110 <span>Feedback Control Systems</span></span>
+              <span class="course-pill">CDS 212 <span>Optimal Control &amp; Estimation</span></span>
+              <span class="course-pill">CDS 245 <span>Data-Driven Control</span></span>
+              <span class="course-pill">Ae 105a <span>Orbital Mechanics</span></span>
+              <span class="course-pill">ME 133a <span>Robotic Manipulation</span></span>
+              <span class="course-pill">ME 133b <span>Robotic Planning</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__header">
+            Mechanical Engineering
+            <span class="accordion__icon">&#8964;</span>
+          </button>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <span class="course-pill">ME 11a <span>Heat Transfer</span></span>
+              <span class="course-pill">ME 11b <span>Heat Transfer</span></span>
+              <span class="course-pill">ME 11c <span>Fluid Mechanics</span></span>
+              <span class="course-pill">ME 12a <span>Statics</span></span>
+              <span class="course-pill">ME 12b <span>Mechanics of Materials</span></span>
+              <span class="course-pill">ME 12c <span>Dynamics</span></span>
+              <span class="course-pill">ME 40 <span>Dimensional &amp; Data Analysis</span></span>
+              <span class="course-pill">ME 50a <span>Modeling — FEA</span></span>
+              <span class="course-pill">ME 50b <span>Modeling — CFD</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <button class="accordion__header">
+            Mathematics &amp; Physics
+            <span class="accordion__icon">&#8964;</span>
+          </button>
+          <div class="accordion__body">
+            <div class="accordion__content">
+              <span class="course-pill">Ma 1a <span>Calculus</span></span>
+              <span class="course-pill">Ma 1b <span>Linear Algebra</span></span>
+              <span class="course-pill">Ma 1c <span>Multivariable Calculus</span></span>
+              <span class="course-pill">Ma 2 <span>Differential Equations</span></span>
+              <span class="course-pill">ACM 95a <span>Complex Analysis</span></span>
+              <span class="course-pill">ACM 95b <span>Partial Differential Equations</span></span>
+              <span class="course-pill">ACM 116 <span>Probability Models</span></span>
+              <span class="course-pill">Ph 1a <span>Classical Mechanics</span></span>
+              <span class="course-pill">Ph 1b <span>Electricity &amp; Magnetism</span></span>
+              <span class="course-pill">Ph 1c <span>Relativity</span></span>
+              <span class="course-pill">Ph 2a <span>Waves &amp; Oscillations</span></span>
+              <span class="course-pill">Ph 2b <span>Quantum Mechanics</span></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       CONTACT
+  ======================================================= -->
+  <section id="contact" class="section--dark">
+    <div class="container">
+      <p class="section-label">Get In Touch</p>
+      <h2 class="section-title">Contact</h2>
+      <div class="contact-grid reveal">
+        <a class="contact-card" href="mailto:sbanuelo@caltech.edu">
+          <div class="contact-card__icon">✉</div>
+          <div>
+            <div class="contact-card__label">Email</div>
+            <div class="contact-card__value">sbanuelo@caltech.edu</div>
+          </div>
+        </a>
+        <a class="contact-card" href="tel:+19158439030">
+          <div class="contact-card__icon">☎</div>
+          <div>
+            <div class="contact-card__label">Phone</div>
+            <div class="contact-card__value">(915) 843-9030</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://www.linkedin.com/in/sebastianbanuelos28/" target="_blank">
+          <div class="contact-card__icon">in</div>
+          <div>
+            <div class="contact-card__label">LinkedIn</div>
+            <div class="contact-card__value">sebastianbanuelos28</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       FOOTER
+  ======================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Sebastian Banuelos</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
