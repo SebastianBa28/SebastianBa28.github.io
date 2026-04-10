@@ -121,11 +121,19 @@
       </p>
 
       <h3>Formulation</h3>
-      <div class="math-display">
-        \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
-        \[h_e(\mathbf{x},\,v) = \dot{h}(\mathbf{x},\,v) + \gamma_1\,h(\mathbf{x})\]
-        \[\dot{h}_e(\mathbf{x},\,v,\,a) \geq -\gamma_2\,h_e(\mathbf{x},\,v)\]
-        \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
+      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+        <div style="flex:1; min-width:0;">
+          <div class="math-display" style="margin:0;">
+            \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
+            \[h_e(\mathbf{x},\,v) = \dot{h}(\mathbf{x},\,v) + \gamma_1\,h(\mathbf{x})\]
+            \[\dot{h}_e(\mathbf{x},\,v,\,a) \geq -\gamma_2\,h_e(\mathbf{x},\,v)\]
+            \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
+          </div>
+        </div>
+        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:10px; width:280px;">
+          <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0.png" alt="CBF trajectory — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+          <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0Error.png" alt="Tracking error — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        </div>
       </div>
 
       <h3>Avoidance Results</h3>
@@ -134,12 +142,10 @@
         larger γ weakens the safety margin but reduces trajectory deviation.
       </p>
       <div class="img-grid">
-        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0.png" alt="CBF trajectory — γ₀" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1.png" alt="CBF trajectory — γ₁" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier2.png" alt="CBF trajectory — γ₂" />
       </div>
       <div class="img-grid">
-        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0Error.png" alt="Tracking error — γ₀" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1Error.png" alt="Tracking error — γ₁" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/BarrierError2.png" alt="Tracking error — γ₂" />
       </div>
