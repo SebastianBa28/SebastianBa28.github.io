@@ -43,16 +43,15 @@
 
       <!-- SYSTEM MODEL -->
       <h2>System Model</h2>
-      <p>
-        The planar drone is modeled as a rigid body with two independent thrust inputs
-        <em>u</em><sub>1</sub> and <em>u</em><sub>2</sub> separated by moment arm <em>r</em>.
-        The six-dimensional state vector is
-        <strong>[x, ẋ, y, ẏ, θ, θ̇]<sup>T</sup></strong> — horizontal and vertical position
-        and velocity, plus pitch angle and rate.
-      </p>
       <div style="display:flex; align-items:center; gap:40px; margin:24px 0;">
         <div style="flex:1; min-width:0; width:50%;">
-          <p style="margin-bottom:12px;">The equations of motion follow directly from Newton-Euler rigid body dynamics:</p>
+          <p style="margin-bottom:12px;">
+            The planar drone is modeled as a rigid body with two independent thrust inputs
+            <em>u</em><sub>1</sub> and <em>u</em><sub>2</sub> separated by moment arm <em>r</em>.
+            The six-dimensional state vector is
+            <strong>[x, ẋ, y, ẏ, θ, θ̇]<sup>T</sup></strong> — horizontal and vertical position
+            and velocity, plus pitch angle and rate.
+            The equations of motion follow directly from Newton-Euler rigid body dynamics:</p>
           <div class="math-display" style="margin:0;">
             \[\begin{aligned}
               m\ddot{x} &amp;= -(u_1 + u_2)\sin\theta \\[6pt]
@@ -85,20 +84,20 @@
       </div>
 
       <h3>Linearization &amp; LQR Design</h3>
-      <p>
-        Defining the tracking error <em>e = x − x<sub>ref</sub></em>, the error dynamics are:
-      </p>
-      <div class="math-display">
-        \[\dot{e} = Ae + Bu_e\]
-        \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} , \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \]
-        \[K = \operatorname{lqr}(A,\,B,\,Q,\,R)\]
-        \[u = u_\text{ref} - Ke\]
-      </div>
-
-      <h3>Trajectory &amp; Tracking Results</h3>
-      <div class="img-grid">
-        <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTracking.png" alt="Trajectory tracking" />
-        <img src="../assets/CDS%20232%20Report/figures/cp1/trackingError.png" alt="Tracking error" />
+      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+        <div style="flex:1; min-width:0;">
+          <p style="margin-bottom:12px;">Defining the tracking error <em>e = x − x<sub>ref</sub></em>, the error dynamics are:</p>
+          <div class="math-display" style="margin:0;">
+            \[\dot{e} = Ae + Bu_e\]
+            \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} , \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \]
+            \[K = \operatorname{lqr}(A,\,B,\,Q,\,R)\]
+            \[u = u_\text{ref} - Ke\]
+          </div>
+        </div>
+        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:10px; width:280px;">
+          <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTracking.png" alt="Trajectory tracking" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+          <img src="../assets/CDS%20232%20Report/figures/cp1/trackingError.png" alt="Tracking error" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        </div>
       </div>
 
       <!-- BARRIER FUNCTIONS -->
