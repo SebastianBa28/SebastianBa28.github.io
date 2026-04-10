@@ -87,26 +87,22 @@
       </div>
 
       <h3>Linearization &amp; LQR Design</h3>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
-        <div style="flex:1; min-width:0;">
-          <p style="margin-bottom:12px;">Defining the tracking error \(e = \mathbf{x} - \mathbf{x}_\text{ref}\) and control error \(u_e = u - u_\text{ref}\), we linearize the system dynamics about the reference trajectory:</p>
-          <div class="math-display" style="margin:0;">
-            \[\dot{e} = Ae + Bu_e\]
-            \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}}  \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \]
-          </div>
-          <p style="margin-bottom:12px;">Consider a controller of the form:</p>
-          <div class="math-display" style="margin:0;">
-            \[u = u_\text{ref} - Ke\]
-          </div>
-          <p style="margin-bottom:12px;"> Where \(K\) is computed using LQR</p>
-          <div class="math-display" style="margin:0;">
-            \[K = \operatorname{lqr}(A,\,B,\,Q,\,R)\]
-          </div>
-        </div>
-        <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:580px;">
-          <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTracking.png" alt="Trajectory tracking" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-          <img src="../assets/CDS%20232%20Report/figures/cp1/trackingError.png" alt="Tracking error" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-        </div>
+      <p style="margin-bottom:12px;">Defining the tracking error \(e = \mathbf{x} - \mathbf{x}_\text{ref}\) and control error \(u_e = u - u_\text{ref}\), we linearize the system dynamics about the reference trajectory:</p>
+      <div class="math-display">
+        \[\dot{e} = Ae + Bu_e\]
+        \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}}  \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \]
+      </div>
+      <p style="margin-bottom:12px;">Consider a controller of the form:</p>
+      <div class="math-display">
+        \[u = u_\text{ref} - Ke\]
+      </div>
+      <p style="margin-bottom:12px;">Where \(K\) is computed using LQR:</p>
+      <div class="math-display">
+        \[K = \operatorname{lqr}(A,\,B,\,Q,\,R)\]
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:580px; margin:20px auto;">
+        <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTracking.png" alt="Trajectory tracking" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/trackingError.png" alt="Tracking error" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
       </div>
 
 
@@ -121,29 +117,25 @@
       </p>
 
       <h3>Formulation</h3>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
-        <div style="flex:1; min-width:0;">
-          <p style="margin-bottom:8px;">We define a safety function \(h(\mathbf{x})\) as the signed distance to the obstacle boundary — positive inside the safe region:</p>
-          <div class="math-display" style="margin:0 0 12px;">
-            \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
-          </div>
-          <p style="margin-bottom:8px;">Since \(h\) has relative degree 2, we extend it via a Lie derivative to obtain a constraint on velocity:</p>
-          <div class="math-display" style="margin:0 0 12px;">
-            \[h_e(\mathbf{x},\,v) = \dot{h}(\mathbf{x},\,v) + \gamma_1\,h(\mathbf{x})\]
-          </div>
-          <p style="margin-bottom:8px;">The safety constraint on the acceleration input is then:</p>
-          <div class="math-display" style="margin:0 0 12px;">
-            \[\dot{h}_e(\mathbf{x},\,v,\,a) \geq -\gamma_2\,h_e(\mathbf{x},\,v)\]
-          </div>
-          <p style="margin-bottom:8px;">At each timestep, we solve a QP that minimally deviates from the nominal LQR input subject to this constraint:</p>
-          <div class="math-display" style="margin:0;">
-            \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
-          </div>
-        </div>
-        <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:580px;">
-          <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0.png" alt="CBF trajectory — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-          <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0Error.png" alt="Tracking error — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-        </div>
+      <p style="margin-bottom:8px;">Consider the barrier function candidate \(h(\mathbf{x})\) as the distance to the obstacle boundary:</p>
+      <div class="math-display">
+        \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
+      </div>
+      <p style="margin-bottom:8px;">Since \(h\) has relative degree 2, consider the extended barrier function:</p>
+      <div class="math-display">
+        \[h_e(\mathbf{x},\,v) = \dot{h}(\mathbf{x},\,v) + \gamma_1\,h(\mathbf{x})\]
+      </div>
+      <p style="margin-bottom:8px;">We verify the safety condition:</p>
+      <div class="math-display">
+        \[\dot{h}_e(\mathbf{x},\,v,\,a) \geq -\gamma_2\,h_e(\mathbf{x},\,v)\]
+      </div>
+      <p style="margin-bottom:8px;">Finally, at each timestep, we solve a QP to blend the tracking control with the safety constraint:</p>
+      <div class="math-display">
+        \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:580px; margin:20px auto;">
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0.png" alt="CBF trajectory — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0Error.png" alt="Tracking error — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
       </div>
 
       <h3>Avoidance Results</h3>
