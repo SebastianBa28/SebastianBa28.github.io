@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
 </head>
 <body class="project-page">
 
@@ -20,8 +21,8 @@
   <div class="project-hero">
     <div class="container">
       <a href="../index.html#projects" class="project-hero__back">← Back to Projects</a>
-      <div class="project-hero__tag">Caltech · ME/CDS/EE 235a: Advanced Robotics Kinematics · 2026</div>
-      <h1 class="project-hero__title">CDS 235 — Robot Arm Teleoperation via Smartphone Pose Estimation</h1>
+      <div class="project-hero__tag">Caltech · ME/CDS/EE 235a: Advanced Robotics Kinematics · 2026 · Prof. Joel Burdick</div>
+      <h1 class="project-hero__title">CDS 235 — Robot Arm Teleoperation<br>via Smartphone Pose Estimation</h1>
     </div>
   </div>
 
@@ -35,10 +36,10 @@
           Real-time teleoperation system for a <strong>UR10e 6-DOF manipulator</strong> using an iPhone as the
           control interface. The phone's full <strong>6-DOF pose</strong> is tracked via Apple's ARKit
           visual-inertial odometry and mapped to two robot control modes: a <strong>velocity mode</strong>
-          using resolved-rate Jacobian control, and a <strong>position mode</strong> using analytical inverse
-          kinematics. Built with ROS 2 and demonstrated in simulation with end-to-end latency under 100 ms.
-          Developed in collaboration with <strong>Firdavs Nasriddinov</strong> for ME/CDS/EE 235a: Advanced
-          Robotics Kinematics (Prof. Joel Burdick, Caltech).
+          using resolved-rate Jacobian control with adaptive damping, and a <strong>position mode</strong>
+          using closed-form analytical inverse kinematics. Built with ROS 2 and demonstrated in simulation
+          with end-to-end latency under 100 ms.
+          Developed in collaboration with <strong>Firdavs Nasriddinov</strong>.
         </div>
       </div>
 
@@ -59,79 +60,166 @@
 
       <!-- MOTIVATION -->
       <h2>Motivation</h2>
-      <p>
-        Modern robot learning pipelines — particularly Vision-Language-Action (VLA) models — depend on
-        large volumes of high-quality human demonstration data. Traditional teleoperation interfaces such as
-        teach pendants and joysticks are unintuitive for full 6-DOF control, creating a bottleneck in data
-        collection. Smartphones, already equipped with IMUs, cameras, and on-device computer vision, offer a
-        natural alternative: humans already manipulate phones in three dimensions without thinking about it,
-        making the phone itself an ergonomic spatial controller.
-      </p>
-
-      <div class="img-grid">
-        <img src="../assets/projects/cds235/phone_1.jpg" alt="iPhone as teleoperation controller" />
-        <img src="../assets/projects/cds235/phone_2.jpg" alt="ARKit pose estimation in action" />
+      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+        <p style="flex:1; margin:0;">
+          Modern robot learning pipelines — particularly Vision-Language-Action (VLA) models — depend on
+          large volumes of high-quality human demonstration data. Traditional teleoperation interfaces such as
+          teach pendants and joysticks are unintuitive for full 6-DOF control, creating a bottleneck in data
+          collection. Smartphones, already equipped with IMUs, cameras, and on-device computer vision, offer a
+          natural alternative: humans already manipulate phones in three dimensions without thinking about it,
+          making the phone itself an ergonomic spatial controller.
+        </p>
+        <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:380px;">
+          <img src="../assets/projects/cds235/phone_1.jpg" alt="iPhone as teleoperation controller" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+          <img src="../assets/projects/cds235/phone_2.jpg" alt="ARKit pose estimation in action" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        </div>
       </div>
 
-      <!-- SYSTEM OVERVIEW -->
-      <h2>System Overview</h2>
+      <!-- POSE ESTIMATION -->
+      <h2>Pose Estimation via Visual-Inertial Odometry</h2>
       <p>
-        The system pipeline runs from phone to robot in real time over WebSocket. Apple's ARKit framework
-        continuously estimates the phone's 6-DOF pose using <strong>visual-inertial odometry (VIO)</strong>
-        — fusing camera feature tracking with IMU data through an error-state Extended Kalman Filter.
-        The resulting pose is expressed relative to an ARKit world frame (Y-up, gravity-aligned), then
-        remapped to the robot's coordinate frame via a permutation matrix. Live feedback on
-        <strong>manipulability</strong> and <strong>joint limit proximity</strong> is streamed back
-        to a web dashboard.
+        The iPhone's 6-DOF pose is estimated by Apple's ARKit using <strong>visual-inertial odometry (VIO)</strong>,
+        an algorithm closely related to the Multi-State Constraint Kalman Filter (MSCKF). VIO fuses two
+        complementary sensor streams to produce a pose estimate at approximately 60 Hz.
       </p>
 
-      <div class="img-full">
-        <img src="../assets/projects/cds235/rviz_1.png" alt="UR10e in RViz simulation" />
+      <h3 style="color:var(--color-accent); margin-bottom:12px;">IMU Propagation</h3>
+      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+        <div style="flex:1; min-width:0;">
+          <p style="margin-bottom:8px;">The IMU provides accelerometer readings \(\mathbf{a}_b\) and gyroscope readings \(\boldsymbol{\omega}_b\) at ~100–1000 Hz. The state is propagated by integration:</p>
+          <div class="math-display" style="margin:0 0 12px;">
+            \[\dot{\mathbf{q}} = \tfrac{1}{2}\,\mathbf{q} \otimes \boldsymbol{\omega}_b, \qquad \dot{\mathbf{v}} = \mathbf{R}(\mathbf{q})\,\mathbf{a}_b - \mathbf{g}, \qquad \dot{\mathbf{p}} = \mathbf{v}\]
+          </div>
+          <p style="margin-bottom:8px;">The error-state EKF maintains a sliding window of \(N\) recent camera poses in its state vector:</p>
+          <div class="math-display" style="margin:0 0 12px;">
+            \[\mathbf{x} = \begin{bmatrix} \mathbf{q} & \mathbf{b}_g & \mathbf{v} & \mathbf{b}_a & \mathbf{p} & \mathbf{q}_{C_1} & \mathbf{p}_{C_1} & \cdots & \mathbf{q}_{C_N} & \mathbf{p}_{C_N} \end{bmatrix}^\top\]
+          </div>
+          <p style="margin-bottom:8px;">The phone twist is then computed from consecutive ARKit poses via finite differencing:</p>
+          <div class="math-display" style="margin:0;">
+            \[\mathbf{v} = \frac{\mathbf{p}_k - \mathbf{p}_{k-1}}{\Delta t}, \qquad \boldsymbol{\omega} = \frac{\theta\,\hat{\mathbf{n}}}{\Delta t}\]
+          </div>
+        </div>
+        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:10px; width:300px;">
+          <img src="../assets/projects/cds235/rviz_1.png" alt="UR10e in RViz simulation" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+          <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        </div>
+      </div>
+
+      <h3 style="color:var(--color-accent); margin-bottom:12px;">Coordinate Frame Mapping</h3>
+      <p style="margin-bottom:8px;">
+        ARKit's world frame has the Y-axis pointing up (gravity-aligned). For intuitive teleoperation,
+        movements must be relative to the phone's orientation at the time of reset — so "move right"
+        always maps to the same robot axis regardless of where the phone faces. We rotate the twist into
+        the reference pose's local frame before axis remapping:
+      </p>
+      <div class="math-display">
+        \[\begin{bmatrix} \mathbf{v}_\text{local} \\ \boldsymbol{\omega}_\text{local} \end{bmatrix}
+        = \begin{bmatrix} \mathbf{R}_\text{ref}^\top &amp; \mathbf{0} \\ \mathbf{0} &amp; \mathbf{R}_\text{ref}^\top \end{bmatrix}
+        \begin{bmatrix} \mathbf{v}_\text{world} \\ \boldsymbol{\omega}_\text{world} \end{bmatrix}\]
+      </div>
+      <p style="margin-bottom:8px;">
+        A permutation matrix \(\mathbf{P}\) then remaps axes to the robot's convention
+        (robot \(X \leftarrow\) phone \(-Z\), robot \(Y \leftarrow\) phone \(-X\), robot \(Z \leftarrow\) phone \(+Y\)):
+      </p>
+      <div class="math-display">
+        \[\mathbf{v}_\text{robot} = \mathbf{P}\,\mathbf{v}_\text{local}, \qquad \mathbf{R}_\text{robot} = \mathbf{P}\,\mathbf{R}_\text{local}\,\mathbf{P}^\top\]
       </div>
 
       <!-- CONTROL MODES -->
       <h2>Control Modes</h2>
 
       <h3>Velocity Mode</h3>
-      <p>
-        The phone's instantaneous twist (linear and angular velocity) is mapped directly to joint velocities
-        using <strong>resolved-rate control</strong> via the UR10e's geometric Jacobian. A
-        <strong>damped least-squares pseudoinverse</strong> with adaptive damping — scaled by the
-        manipulability measure — prevents instability near kinematic singularities.
-        An exponential moving average filters the twist signal to smooth control inputs.
-      </p>
-
-      <div class="img-full">
-        <img src="../assets/projects/cds235/vel_mode.png" alt="Velocity mode joint trajectories" />
+      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+        <div style="flex:1; min-width:0;">
+          <p style="margin-bottom:8px;">The phone's instantaneous twist \(\dot{\mathbf{x}} = [\mathbf{v}^\top,\, \boldsymbol{\omega}^\top]^\top\) is mapped to joint velocities via the <strong>damped least-squares (DLS) pseudoinverse</strong> of the UR10e's geometric Jacobian:</p>
+          <div class="math-display" style="margin:0 0 12px;">
+            \[\dot{\mathbf{q}} = \mathbf{J}^\top \left(\mathbf{J}\mathbf{J}^\top + \lambda^2 \mathbf{I}\right)^{-1} \dot{\mathbf{x}}\]
+          </div>
+          <p style="margin-bottom:8px;">The damping factor \(\lambda\) adapts based on the Yoshikawa manipulability measure to prevent instability near singularities:</p>
+          <div class="math-display" style="margin:0 0 12px;">
+            \[\mu = \sqrt{\det(\mathbf{J}\mathbf{J}^\top)}\]
+          </div>
+          <div class="math-display" style="margin:0 0 12px;">
+            \[\lambda(\mu) = \begin{cases} \lambda_\text{min} & \text{if } \mu > \mu_\text{thresh} \\ \lambda_\text{min} + \left(1 - \dfrac{\mu}{\mu_\text{thresh}}\right)(\lambda_\text{max} - \lambda_\text{min}) & \text{otherwise} \end{cases}\]
+          </div>
+          <p style="margin-bottom:8px;">with \(\lambda_\text{min} = 0.001\), \(\lambda_\text{max} = 0.1\), \(\mu_\text{thresh} = 0.01\). An exponential moving average filter smooths the noisy twist estimate before it enters the solver:</p>
+          <div class="math-display" style="margin:0;">
+            \[\dot{\mathbf{x}}_k = \alpha\,\dot{\mathbf{x}}_\text{raw} + (1 - \alpha)\,\dot{\mathbf{x}}_{k-1}, \quad \alpha = 0.3\]
+          </div>
+        </div>
+        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:0; width:320px;">
+          <img src="../assets/projects/cds235/vel_mode.png" alt="Velocity mode joint trajectories" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        </div>
       </div>
 
       <h3>Position Mode</h3>
-      <p>
-        The phone's displacement from a saved reference pose is interpreted as a desired end-effector target.
-        The system solves for joint angles using <strong>closed-form analytical inverse kinematics</strong>
-        derived from the UR10e's Denavit-Hartenberg parameters. This mode produces smoother, more predictable
-        trajectories for precision tasks.
-      </p>
-
-      <div class="img-full">
-        <img src="../assets/projects/cds235/pos_mode.png" alt="Position mode end-effector tracking" />
+      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+        <div style="flex:1; min-width:0;">
+          <p style="margin-bottom:8px;">The phone's displacement from a saved reference pose is interpreted as a desired end-effector target via the relative transform:</p>
+          <div class="math-display" style="margin:0 0 12px;">
+            \[\mathbf{T}_\text{target} = \mathbf{T}_\text{ee,ref}\,\mathbf{T}_\text{rel,robot}, \qquad \mathbf{T}_\text{rel} = \mathbf{T}_\text{ref}^{-1}\,\mathbf{T}_\text{current}\]
+          </div>
+          <p style="margin-bottom:8px;">The UR10e is parameterized using the Denavit-Hartenberg convention. Each joint's homogeneous transform is:</p>
+          <div class="math-display" style="margin:0 0 12px;">
+            \[\mathbf{A}_i = \begin{bmatrix} c_{\theta_i} &amp; -s_{\theta_i} c_{\alpha_i} &amp; s_{\theta_i} s_{\alpha_i} &amp; a_i c_{\theta_i} \\ s_{\theta_i} &amp; c_{\theta_i} c_{\alpha_i} &amp; -c_{\theta_i} s_{\alpha_i} &amp; a_i s_{\theta_i} \\ 0 &amp; s_{\alpha_i} &amp; c_{\alpha_i} &amp; d_i \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{bmatrix}\]
+          </div>
+          <p style="margin-bottom:8px;">Joint angles are solved sequentially via half-angle substitution, yielding up to 8 solutions. We prefer <strong>elbow-up</strong> configurations (\(\theta_3 > 0\)) and select the solution minimizing wrapped angular distance to the current configuration.</p>
+        </div>
+        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:10px; width:320px;">
+          <img src="../assets/projects/cds235/pos_mode.png" alt="Position mode joint trajectories" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+          <table class="tech-table" style="font-size:.78rem;">
+            <thead>
+              <tr><th>Joint</th><th>\(a_i\) [m]</th><th>\(d_i\) [m]</th><th>\(\alpha_i\) [rad]</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>0</td><td>0.1807</td><td>\(\pi/2\)</td></tr>
+              <tr><td>2</td><td>−0.6127</td><td>0</td><td>0</td></tr>
+              <tr><td>3</td><td>−0.5716</td><td>0</td><td>0</td></tr>
+              <tr><td>4</td><td>0</td><td>0.1742</td><td>\(\pi/2\)</td></tr>
+              <tr><td>5</td><td>0</td><td>0.1199</td><td>\(-\pi/2\)</td></tr>
+              <tr><td>6</td><td>0</td><td>0.1166</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- RESULTS -->
-      <h2>Results</h2>
+      <!-- SYSTEM ARCHITECTURE -->
+      <h2>System Architecture</h2>
       <p>
-        The system operates in real time with <strong>end-to-end latency under 100 ms</strong>. Position mode
-        demonstrates responsive joint trajectories following the phone's motion, while velocity mode produces
-        smooth profiles with the adaptive damping mitigating singularity effects. A reset behavior snaps the
-        robot to its home configuration and re-references the phone pose on demand.
+        The system consists of <strong>three components</strong> communicating over WebSocket using JSON-encoded messages.
+        All kinematics computation runs in the ROS 2 node at 30 Hz; the relay server adds no processing latency.
       </p>
 
-      <div class="img-grid">
-        <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" />
-        <img src="../assets/projects/cds235/reset.png" alt="Reset behavior joint trajectories" />
+      <div class="node-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="node-card" style="border-top: 3px solid var(--color-accent);">
+          <div class="node-card__name">iOS App</div>
+          <div class="node-card__title">Swift / SwiftUI</div>
+          <div class="node-card__desc">
+            ARSessionManager captures ARKit poses and computes twist. TeleopManager coordinates reference pose
+            management, frame rotation, and axis remapping. Renders color-coded manipulability feedback
+            and maps it to haptic vibration intensity.
+          </div>
+        </div>
+        <div class="node-card" style="border-top: 3px solid var(--color-accent);">
+          <div class="node-card__name">Relay Server</div>
+          <div class="node-card__title">FastAPI · Python</div>
+          <div class="node-card__desc">
+            Lightweight WebSocket relay with no kinematics computation. Forwards teleop messages from the
+            iOS app to the ROS node and relays feedback in reverse. Hosts the live web debug dashboard.
+          </div>
+        </div>
+        <div class="node-card" style="border-top: 3px solid var(--color-accent);">
+          <div class="node-card__name">Kinematics Node</div>
+          <div class="node-card__title">ROS 2 Jazzy · Python</div>
+          <div class="node-card__desc">
+            30 Hz timer callback performs resolved-rate or analytical IK depending on control mode.
+            Publishes JointState messages for robot_state_publisher and RViz. Sends manipulability,
+            joint limit proximity, and feasibility feedback at 30 Hz.
+          </div>
+        </div>
       </div>
 
-      <div class="img-full">
+      <div class="img-full" style="margin-top:24px;">
         <img src="../assets/projects/cds235/dashboard.png" alt="Live telemetry debug dashboard" />
       </div>
       <p style="font-size:.85rem; color:var(--color-muted); margin-top:-8px;">
@@ -139,19 +227,46 @@
         joint limit proximity, and system status — updated in real time over WebSocket.
       </p>
 
+      <!-- RESULTS -->
+      <h2>Results</h2>
+      <p>
+        The system operates in real time with <strong>end-to-end latency under 100 ms</strong>. Position mode
+        demonstrates responsive joint trajectories following the phone's motion, while velocity mode produces
+        smooth profiles with the adaptive damping mitigating singularity effects. A reset behavior snaps the
+        robot to its home configuration \(\mathbf{q}_0 = [-\pi/2,\,-\pi/2,\,\pi/2,\,-\pi/2,\,-\pi/2,\,0]\)
+        and re-references the phone pose on demand.
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0;">
+        <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/projects/cds235/reset.png" alt="Reset behavior joint trajectories" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+      </div>
+
       <!-- SHORTCOMINGS -->
       <h2>Shortcomings &amp; Future Work</h2>
       <ul>
-        <li><strong>Simulation only</strong> — the system was not validated on physical hardware.</li>
+        <li><strong>Simulation only</strong> — the system was not validated on physical UR10e hardware.</li>
         <li><strong>VIO drift</strong> — ARKit pose estimates accumulate error in feature-poor environments.</li>
-        <li><strong>No collision avoidance</strong> — joint trajectories do not account for obstacles.</li>
-        <li><strong>Future:</strong> Real UR10e integration, gripper/grasping support, trajectory smoothing,
-          multi-user teleoperation, and online drift correction.</li>
+        <li><strong>No collision avoidance</strong> — joint trajectories do not account for obstacles in the workspace.</li>
+        <li><strong>IK discontinuities</strong> — switching between solution branches can produce jerky motion.</li>
+        <li><strong>Future:</strong> Real UR10e integration via RTDE, gripper/grasping support, minimum-jerk trajectory smoothing, multi-user teleoperation, and online VIO drift correction.</li>
       </ul>
 
     </div>
   </div>
 
   <script src="../js/main.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "\\[", right: "\\]", display: true },
+          { left: "\\(", right: "\\)", display: false }
+        ]
+      });
+    });
+  </script>
 </body>
 </html>
