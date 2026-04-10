@@ -50,18 +50,21 @@
         <strong>[x, ẋ, y, ẏ, θ, θ̇]<sup>T</sup></strong> — horizontal and vertical position
         and velocity, plus pitch angle and rate.
       </p>
-      <div class="img-full">
-        <img src="../assets/CDS%20232%20Report/figures/cp1/quadrotor2d.svg" alt="3-DOF planar quadrotor diagram" />
-      </div>
-
-      <p>The equations of motion follow directly from Newton-Euler rigid body dynamics:</p>
-      <div class="math-display">
-        \[\begin{aligned}
-          m\ddot{x} &amp;= -(u_1 + u_2)\sin\theta \\[6pt]
-          m\ddot{y} &amp;= (u_1 + u_2)\cos\theta - mg \\[6pt]
-          I\ddot{\theta} &amp;= r\,(u_1 - u_2)
-        \end{aligned}\]
-        \[\mathbf{x} = \bigl[\,x,\;\dot{x},\;y,\;\dot{y},\;\theta,\;\dot{\theta}\,\bigr]^\top \in \mathbb{R}^6\]
+      <div style="display:flex; align-items:center; gap:40px; margin:24px 0;">
+        <div style="flex:1; min-width:0;">
+          <p style="margin-bottom:12px;">The equations of motion follow directly from Newton-Euler rigid body dynamics:</p>
+          <div class="math-display" style="margin:0;">
+            \[\begin{aligned}
+              m\ddot{x} &amp;= -(u_1 + u_2)\sin\theta \\[6pt]
+              m\ddot{y} &amp;= (u_1 + u_2)\cos\theta - mg \\[6pt]
+              I\ddot{\theta} &amp;= r\,(u_1 - u_2)
+            \end{aligned}\]
+            \[\mathbf{x} = \bigl[\,x,\;\dot{x},\;y,\;\dot{y},\;\theta,\;\dot{\theta}\,\bigr]^\top \in \mathbb{R}^6\]
+          </div>
+        </div>
+        <div style="flex-shrink:0; width:320px;">
+          <img src="../assets/CDS%20232%20Report/figures/cp1/quadrotor2d.svg" alt="3-DOF planar quadrotor diagram" style="width:100%; height:auto;" />
+        </div>
       </div>
 
       <!-- TRAJECTORY TRACKING CONTROLLER -->
