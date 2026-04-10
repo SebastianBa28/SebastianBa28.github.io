@@ -123,7 +123,7 @@
       <h3>Formulation</h3>
       <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
         <div style="flex:1; min-width:0;">
-          <p style="margin-bottom:8px;">We define a safety function \(h(\mathbf{x})\) as the signed distance to the obstacle boundary — positive inside the safe region:</p>
+          <p style="margin-bottom:8px;">Consider the barrier function candidate \(h(\mathbf{x})\) as the distance to the obstacle boundary</p>
           <div class="math-display" style="margin:0 0 12px;">
             \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
           </div>
@@ -148,8 +148,7 @@
 
       <h3>Avoidance Results</h3>
       <p>
-        Three values of γ are compared. All successfully avoid the obstacle —
-        larger γ weakens the safety margin but reduces trajectory deviation.s
+        Applying the CBF-QP controller to a more complex trajectory we obserse the following performance
       </p>
       <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:20px 0;">
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1.png" alt="CBF trajectory — γ₁" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
