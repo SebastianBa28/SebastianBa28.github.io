@@ -127,15 +127,15 @@
           <div class="math-display" style="margin:0 0 12px;">
             \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
           </div>
-          <p style="margin-bottom:8px;">Since \(h\) has relative degree 2, we extend it via a Lie derivative to obtain a constraint on velocity:</p>
+          <p style="margin-bottom:8px;">Since \(h\) has relative degree 2, consider the extended barrier function</p>
           <div class="math-display" style="margin:0 0 12px;">
             \[h_e(\mathbf{x},\,v) = \dot{h}(\mathbf{x},\,v) + \gamma_1\,h(\mathbf{x})\]
           </div>
-          <p style="margin-bottom:8px;">The safety constraint on the acceleration input is then:</p>
+          <p style="margin-bottom:8px;">We synthesize a controller to satisfy the safety condition</p>
           <div class="math-display" style="margin:0 0 12px;">
             \[\dot{h}_e(\mathbf{x},\,v,\,a) \geq -\gamma_2\,h_e(\mathbf{x},\,v)\]
           </div>
-          <p style="margin-bottom:8px;">At each timestep, we solve a QP that minimally deviates from the nominal LQR input subject to this constraint:</p>
+          <p style="margin-bottom:8px;">At each timestep, we solve a QP to blend the tracking controller with the safety constraint</p>
           <div class="math-display" style="margin:0;">
             \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
           </div>
@@ -154,16 +154,17 @@
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1.png" alt="CBF trajectory — γ₁" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1Error.png" alt="Tracking error — γ₁" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Control1.png" alt="Control inputs — low tracking cost" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+      </div>
+
+      <p>
+        Note that in the controller falls behind on the trajectory to go around the obstacle, but quickly recovers to track the reference path with minimal error. 
+        Increasing the state cost in the LQR formulation results in a tighter tracking performance, but at the cost of more aggressive control inputs.
+      </p>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:20px 0;">
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier2.png" alt="CBF trajectory — γ₂" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/BarrierError2.png" alt="Tracking error — γ₂" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Control2.png" alt="Control inputs — high tracking cost" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
       </div>
-
-      <h3>Control Effort Trade-off</h3>
-      <p>
-        Tighter tracking demands higher control effort during avoidance, producing oscillations.
-        A looser tracking weight yields smoother avoidance at the cost of larger steady-state error.
-      </p>
 
       <!-- FULL REPORT -->
       <h2>Full Report</h2>
