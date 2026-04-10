@@ -72,10 +72,10 @@
         <div style="flex:1;">
           <h3 style="color:var(--color-accent); margin-bottom:12px;">Trajectory Generation</h3>
           <p style="margin:0;">
-          A <strong>minimum-snap optimization</strong> generates a smooth nominal reference trajectory
-          over a sequence of waypoints. The controller then tracks this reference by
-          <strong>linearizing the nonlinear dynamics about the reference trajectory</strong>,
-          yielding time-varying linear error dynamics that admit an LQR solution.
+          A <strong>minimum-snap optimization</strong> generates a smooth nominal spatial reference 
+          trajectory over a sequence of waypoints. From this, the <strong> full state can be recovered analytically </strong>.
+          Simiarly, the nominal control inputs are derived by substituting the reference state into the dynamics.
+          Below we derive and implement a baseline linear controller to track the desired trajectory.
         </p>
         </div>
         <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:580px;">
@@ -89,7 +89,7 @@
       <h3>Linearization &amp; LQR Design</h3>
       <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
         <div style="flex:1; min-width:0;">
-          <p style="margin-bottom:12px;">Defining the tracking error <em>e = x − x<sub>ref</sub></em>, the error dynamics are:</p>
+          <p style="margin-bottom:12px;">Defining the tracking error \(e = \mathbf{x} - \mathbf{x}_\text{ref}\), the error dynamics are:</p>
           <div class="math-display" style="margin:0;">
             \[\dot{e} = Ae + Bu_e\]
             \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} , \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \]
