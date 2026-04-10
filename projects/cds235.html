@@ -43,36 +43,76 @@
         </div>
       </div>
 
-      <!-- DEMO VIDEO -->
-      <h2>Demo Video</h2>
-      <div class="yt-embed">
-        <iframe
-          src="https://drive.google.com/file/d/1iJ-YPce5TwE5rri7qKfI2MuopTnw3I6X/preview"
-          allow="autoplay"
-          allowfullscreen
-        ></iframe>
-      </div>
-
-      <div class="project-demo">
-        <a href="https://github.com/firdavsn/robot-arm-teleop" class="btn--project-outline" target="_blank">⌥ GitHub Repo ↗</a>
-        <a href="../assets/CDS%20235%20Project/me235a.pdf" class="btn--project-outline" target="_blank">📄 View Report ↗</a>
-      </div>
-
-      <!-- MOTIVATION -->
-      <h2>Motivation</h2>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
-        <p style="flex:1; margin:0;">
-          Modern robot learning pipelines — particularly Vision-Language-Action (VLA) models — depend on
-          large volumes of high-quality human demonstration data. Traditional teleoperation interfaces such as
-          teach pendants and joysticks are unintuitive for full 6-DOF control, creating a bottleneck in data
-          collection. Smartphones, already equipped with IMUs, cameras, and on-device computer vision, offer a
-          natural alternative: humans already manipulate phones in three dimensions without thinking about it,
-          making the phone itself an ergonomic spatial controller.
-        </p>
-        <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:380px;">
-          <img src="../assets/projects/cds235/phone_1.jpg" alt="iPhone as teleoperation controller" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-          <img src="../assets/projects/cds235/phone_2.jpg" alt="ARKit pose estimation in action" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+      <div style="display:flex; gap:40px; align-items:flex-start; margin:20px 0;">
+        <div style="flex:1; min-width:0;">
+          <h2 style="margin-top:0;">Motivation</h2>
+          <p>
+            Modern robot learning pipelines — particularly Vision-Language-Action (VLA) models — depend on
+            large volumes of high-quality human demonstration data. Traditional teleoperation interfaces such as
+            teach pendants and joysticks are unintuitive for full 6-DOF control, creating a bottleneck in data
+            collection. Smartphones, already equipped with IMUs, cameras, and on-device computer vision, offer a
+            natural alternative: humans already manipulate phones in three dimensions without thinking about it,
+            making the phone itself an ergonomic spatial controller.
+          </p>
         </div>
+        <div style="flex:1.8; min-width:0;">
+          <h2 style="margin-top:0;">Demo Video</h2>
+          <div class="yt-embed">
+            <iframe
+              src="https://drive.google.com/file/d/1iJ-YPce5TwE5rri7qKfI2MuopTnw3I6X/preview"
+              allow="autoplay"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="project-demo">
+            <a href="https://github.com/firdavsn/robot-arm-teleop" class="btn--project-outline" target="_blank">⌥ GitHub Repo ↗</a>
+            <a href="../assets/CDS%20235%20Project/me235a.pdf" class="btn--project-outline" target="_blank">📄 View Report ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SYSTEM ARCHITECTURE -->
+      <h2>System Architecture</h2>
+      <p>
+        The system consists of <strong>three components</strong> communicating over WebSocket using JSON-encoded messages.
+        All kinematics computation runs in the ROS 2 node at 30 Hz; the relay server adds no processing latency.
+      </p>
+
+      <div style="display:flex; align-items:stretch; gap:0; margin:20px 0;">
+        <div class="node-card" style="border-top: 3px solid var(--color-accent); flex:1;">
+          <div class="node-card__name">iOS App</div>
+          <div class="node-card__title">Swift / SwiftUI</div>
+          <div class="node-card__desc">
+            ARSessionManager captures ARKit poses and computes twist. TeleopManager coordinates reference pose
+            management, frame rotation, and axis remapping. Renders color-coded manipulability feedback
+            and maps it to haptic vibration intensity.
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:center; padding:0 6px; flex-shrink:0; font-size:1.8rem; font-weight:700; color:var(--color-accent);">⇄</div>
+        <div class="node-card" style="border-top: 3px solid var(--color-accent); flex:1;">
+          <div class="node-card__name">Relay Server</div>
+          <div class="node-card__title">FastAPI · Python</div>
+          <div class="node-card__desc">
+            Lightweight WebSocket relay with no kinematics computation. Forwards teleop messages from the
+            iOS app to the ROS node and relays feedback in reverse. Hosts the live web debug dashboard.
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:center; padding:0 6px; flex-shrink:0; font-size:1.8rem; font-weight:700; color:var(--color-accent);">⇄</div>
+        <div class="node-card" style="border-top: 3px solid var(--color-accent); flex:1;">
+          <div class="node-card__name">Kinematics Node</div>
+          <div class="node-card__title">ROS 2 Jazzy · Python</div>
+          <div class="node-card__desc">
+            30 Hz timer callback performs resolved-rate or analytical IK depending on control mode.
+            Publishes JointState messages for robot_state_publisher and RViz. Sends manipulability,
+            joint limit proximity, and feasibility feedback at 30 Hz.
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:0.5fr 1fr 0.5fr; gap:10px; margin-top:24px;">
+        <img src="../assets/projects/cds235/phone_1.jpg" alt="iOS App" style="width:100%; height:300px; object-fit:cover; object-position:center top; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/projects/cds235/dashboard.png" alt="Live telemetry debug dashboard" style="width:100%; height:300px; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/projects/cds235/rviz_1.png" alt="ROS 2 Kinematics Node in RViz" style="width:100%; height:300px; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
       </div>
 
       <!-- POSE ESTIMATION -->
@@ -84,7 +124,7 @@
       </p>
 
       <h3 style="color:var(--color-accent); margin-bottom:12px;">IMU Propagation</h3>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+      <div style="display:flex; align-items:flex-start; gap:40px; margin:16px 0;">
         <div style="flex:1; min-width:0;">
           <p style="margin-bottom:8px;">The IMU provides accelerometer readings \(\mathbf{a}_b\) and gyroscope readings \(\boldsymbol{\omega}_b\) at ~100–1000 Hz. The state is propagated by integration:</p>
           <div class="math-display" style="margin:0 0 12px;">
@@ -99,30 +139,13 @@
             \[\mathbf{v} = \frac{\mathbf{p}_k - \mathbf{p}_{k-1}}{\Delta t}, \qquad \boldsymbol{\omega} = \frac{\theta\,\hat{\mathbf{n}}}{\Delta t}\]
           </div>
         </div>
-        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:10px; width:300px;">
-          <img src="../assets/projects/cds235/rviz_1.png" alt="UR10e in RViz simulation" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-          <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <div style="flex:1; min-width:0; display:flex; gap:10px;">
+          <img src="../assets/projects/cds235/phone_1.jpg" alt="iPhone as teleoperation controller" style="width:50%; height:auto; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+          <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+            <img src="../assets/projects/cds235/rviz_1.png" alt="UR10e in RViz simulation" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+            <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+          </div>
         </div>
-      </div>
-
-      <h3 style="color:var(--color-accent); margin-bottom:12px;">Coordinate Frame Mapping</h3>
-      <p style="margin-bottom:8px;">
-        ARKit's world frame has the Y-axis pointing up (gravity-aligned). For intuitive teleoperation,
-        movements must be relative to the phone's orientation at the time of reset — so "move right"
-        always maps to the same robot axis regardless of where the phone faces. We rotate the twist into
-        the reference pose's local frame before axis remapping:
-      </p>
-      <div class="math-display">
-        \[\begin{bmatrix} \mathbf{v}_\text{local} \\ \boldsymbol{\omega}_\text{local} \end{bmatrix}
-        = \begin{bmatrix} \mathbf{R}_\text{ref}^\top &amp; \mathbf{0} \\ \mathbf{0} &amp; \mathbf{R}_\text{ref}^\top \end{bmatrix}
-        \begin{bmatrix} \mathbf{v}_\text{world} \\ \boldsymbol{\omega}_\text{world} \end{bmatrix}\]
-      </div>
-      <p style="margin-bottom:8px;">
-        A permutation matrix \(\mathbf{P}\) then remaps axes to the robot's convention
-        (robot \(X \leftarrow\) phone \(-Z\), robot \(Y \leftarrow\) phone \(-X\), robot \(Z \leftarrow\) phone \(+Y\)):
-      </p>
-      <div class="math-display">
-        \[\mathbf{v}_\text{robot} = \mathbf{P}\,\mathbf{v}_\text{local}, \qquad \mathbf{R}_\text{robot} = \mathbf{P}\,\mathbf{R}_\text{local}\,\mathbf{P}^\top\]
       </div>
 
       <!-- CONTROL MODES -->
@@ -147,7 +170,7 @@
             \[\dot{\mathbf{x}}_k = \alpha\,\dot{\mathbf{x}}_\text{raw} + (1 - \alpha)\,\dot{\mathbf{x}}_{k-1}, \quad \alpha = 0.3\]
           </div>
         </div>
-        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:0; width:320px;">
+        <div style="flex:1; min-width:0;">
           <img src="../assets/projects/cds235/vel_mode.png" alt="Velocity mode joint trajectories" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         </div>
       </div>
@@ -165,67 +188,10 @@
           </div>
           <p style="margin-bottom:8px;">Joint angles are solved sequentially via half-angle substitution, yielding up to 8 solutions. We prefer <strong>elbow-up</strong> configurations (\(\theta_3 > 0\)) and select the solution minimizing wrapped angular distance to the current configuration.</p>
         </div>
-        <div style="flex-shrink:0; display:flex; flex-direction:column; gap:10px; width:320px;">
+        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:10px;">
           <img src="../assets/projects/cds235/pos_mode.png" alt="Position mode joint trajectories" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-          <table class="tech-table" style="font-size:.78rem;">
-            <thead>
-              <tr><th>Joint</th><th>\(a_i\) [m]</th><th>\(d_i\) [m]</th><th>\(\alpha_i\) [rad]</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>0</td><td>0.1807</td><td>\(\pi/2\)</td></tr>
-              <tr><td>2</td><td>−0.6127</td><td>0</td><td>0</td></tr>
-              <tr><td>3</td><td>−0.5716</td><td>0</td><td>0</td></tr>
-              <tr><td>4</td><td>0</td><td>0.1742</td><td>\(\pi/2\)</td></tr>
-              <tr><td>5</td><td>0</td><td>0.1199</td><td>\(-\pi/2\)</td></tr>
-              <tr><td>6</td><td>0</td><td>0.1166</td><td>0</td></tr>
-            </tbody>
-          </table>
         </div>
       </div>
-
-      <!-- SYSTEM ARCHITECTURE -->
-      <h2>System Architecture</h2>
-      <p>
-        The system consists of <strong>three components</strong> communicating over WebSocket using JSON-encoded messages.
-        All kinematics computation runs in the ROS 2 node at 30 Hz; the relay server adds no processing latency.
-      </p>
-
-      <div class="node-grid" style="grid-template-columns: repeat(3, 1fr);">
-        <div class="node-card" style="border-top: 3px solid var(--color-accent);">
-          <div class="node-card__name">iOS App</div>
-          <div class="node-card__title">Swift / SwiftUI</div>
-          <div class="node-card__desc">
-            ARSessionManager captures ARKit poses and computes twist. TeleopManager coordinates reference pose
-            management, frame rotation, and axis remapping. Renders color-coded manipulability feedback
-            and maps it to haptic vibration intensity.
-          </div>
-        </div>
-        <div class="node-card" style="border-top: 3px solid var(--color-accent);">
-          <div class="node-card__name">Relay Server</div>
-          <div class="node-card__title">FastAPI · Python</div>
-          <div class="node-card__desc">
-            Lightweight WebSocket relay with no kinematics computation. Forwards teleop messages from the
-            iOS app to the ROS node and relays feedback in reverse. Hosts the live web debug dashboard.
-          </div>
-        </div>
-        <div class="node-card" style="border-top: 3px solid var(--color-accent);">
-          <div class="node-card__name">Kinematics Node</div>
-          <div class="node-card__title">ROS 2 Jazzy · Python</div>
-          <div class="node-card__desc">
-            30 Hz timer callback performs resolved-rate or analytical IK depending on control mode.
-            Publishes JointState messages for robot_state_publisher and RViz. Sends manipulability,
-            joint limit proximity, and feasibility feedback at 30 Hz.
-          </div>
-        </div>
-      </div>
-
-      <div class="img-full" style="margin-top:24px;">
-        <img src="../assets/projects/cds235/dashboard.png" alt="Live telemetry debug dashboard" />
-      </div>
-      <p style="font-size:.85rem; color:var(--color-muted); margin-top:-8px;">
-        Web-based debug dashboard displaying live joint angles, manipulability bar, twist magnitude,
-        joint limit proximity, and system status — updated in real time over WebSocket.
-      </p>
 
       <!-- RESULTS -->
       <h2>Results</h2>
@@ -237,9 +203,9 @@
         and re-references the phone pose on demand.
       </p>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0;">
-        <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-        <img src="../assets/projects/cds235/reset.png" alt="Reset behavior joint trajectories" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+      <div style="display:flex; gap:10px; margin:20px 0; align-items:flex-start; justify-content:center;">
+        <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="height:280px; width:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/projects/cds235/reset.png" alt="Reset behavior joint trajectories" style="height:280px; width:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
       </div>
 
       <!-- SHORTCOMINGS -->
