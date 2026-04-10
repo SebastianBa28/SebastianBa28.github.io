@@ -123,10 +123,20 @@
       <h3>Formulation</h3>
       <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
         <div style="flex:1; min-width:0;">
-          <div class="math-display" style="margin:0;">
+          <p style="margin-bottom:8px;">We define a safety function \(h(\mathbf{x})\) as the signed distance to the obstacle boundary — positive inside the safe region:</p>
+          <div class="math-display" style="margin:0 0 12px;">
             \[h(\mathbf{x}) = \|x_\text{pos} - x_\text{obs}\| - D_\text{obs} \geq 0\]
+          </div>
+          <p style="margin-bottom:8px;">Since \(h\) has relative degree 2, we extend it via a Lie derivative to obtain a constraint on velocity:</p>
+          <div class="math-display" style="margin:0 0 12px;">
             \[h_e(\mathbf{x},\,v) = \dot{h}(\mathbf{x},\,v) + \gamma_1\,h(\mathbf{x})\]
+          </div>
+          <p style="margin-bottom:8px;">The safety constraint on the acceleration input is then:</p>
+          <div class="math-display" style="margin:0 0 12px;">
             \[\dot{h}_e(\mathbf{x},\,v,\,a) \geq -\gamma_2\,h_e(\mathbf{x},\,v)\]
+          </div>
+          <p style="margin-bottom:8px;">At each timestep, we solve a QP that minimally deviates from the nominal LQR input subject to this constraint:</p>
+          <div class="math-display" style="margin:0;">
             \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
           </div>
         </div>
