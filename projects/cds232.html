@@ -76,24 +76,25 @@
         yielding time-varying linear error dynamics that admit an LQR solution.
       </p>
 
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:600px; margin:20px auto;">
+        <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTraj.png" alt="Spatial trajectory" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/trajComponents.png" alt="X and Y trajectory components" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/orientation.png" alt="Orientation profile θ(t)" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/CDS%20232%20Report/figures/cp1/controlInputs.png" alt="Motor inputs u₁ and u₂" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+      </div>
+
       <h3>Linearization &amp; LQR Design</h3>
       <p>
         Defining the tracking error <em>e = x − x<sub>ref</sub></em>, the error dynamics are:
       </p>
       <div class="math-display">
         \[\dot{e} = Ae + Bu_e\]
-        \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \in \mathbb{R}^{6\times6}, \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \in \mathbb{R}^{6\times2}\]
+        \[A = \frac{\partial f}{\partial \mathbf{x}}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} , \qquad B = \frac{\partial f}{\partial u}\bigg|_{\mathbf{x}_\text{ref},\,u_\text{ref}} \]
         \[K = \operatorname{lqr}(A,\,B,\,Q,\,R)\]
         \[u = u_\text{ref} - Ke\]
       </div>
 
       <h3>Trajectory &amp; Tracking Results</h3>
-      <div class="img-grid">
-        <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTraj.png" alt="Spatial trajectory" />
-        <img src="../assets/CDS%20232%20Report/figures/cp1/trajComponents.png" alt="X and Y trajectory components" />
-        <img src="../assets/CDS%20232%20Report/figures/cp1/orientation.png" alt="Orientation profile θ(t)" />
-        <img src="../assets/CDS%20232%20Report/figures/cp1/controlInputs.png" alt="Motor inputs u₁ and u₂" />
-      </div>
       <div class="img-grid">
         <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTracking.png" alt="Trajectory tracking" />
         <img src="../assets/CDS%20232%20Report/figures/cp1/trackingError.png" alt="Tracking error" />
