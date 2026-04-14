@@ -81,23 +81,33 @@
   ======================================================= -->
   <section id="about">
     <div class="container">
-      <p class="section-label">About Me</p>
-      <h2 class="section-title">A bit about myself</h2>
       <div class="about__inner reveal">
         <div class="about__bio">
-          <p>
-            My name is Sebastian — I am a fourth-year Mechanical Engineering student at
-            Caltech with a minor in Controls and Dynamical Systems. Through my coursework
-            and work experience I have developed a solid foundation in control theory,
-            mathematical optimization, and robotic planning. I am particularly interested
-            in applying these skills to the design and implementation of guidance, navigation,
-            and control (GNC) systems in aerospace.
-          </p>
-          <p>
-            Outside of engineering I enjoy cycling through scenic landscapes, theatre and
-            modern dance, and reading science fiction — particularly Isaac Asimov and Philip K. Dick.
-            I am fluent in both English and Spanish.
-          </p>
+          <p class="section-label" style="margin-bottom:8px;">About Me</p>
+          <h2 class="section-title" style="font-size:1.6rem; margin-bottom:24px;">A bit about myself</h2>
+          <div class="about__bio-row">
+            <p>
+              My name is Sebastian — I am a fourth-year Mechanical Engineering student at
+              Caltech with a minor in Controls and Dynamical Systems. Through my coursework
+              and work experience I have developed a solid foundation in control theory,
+              mathematical optimization, and robotic planning. I am particularly interested
+              in applying these skills to the design and implementation of guidance, navigation,
+              and control (GNC) systems in aerospace.
+            </p>
+            <div class="about__photo about__photo--full">
+              <img src="assets/jpl.png" alt="Sebastian at NASA Jet Propulsion Laboratory">
+            </div>
+          </div>
+          <div class="about__bio-row about__bio-row--reverse">
+            <div class="about__photo about__photo--full">
+              <img src="assets/doc oct.jpeg" alt="Sebastian at Doc Ock">
+            </div>
+            <p>
+              Outside of engineering I enjoy cycling through scenic landscapes, theatre and
+              modern dance, and reading science fiction — particularly Isaac Asimov and Philip K. Dick.
+              I am fluent in both English and Spanish.
+            </p>
+          </div>
         </div>
         <div class="about__experience">
           <p class="section-label" style="margin-bottom:8px;">Work Experience</p>
@@ -116,15 +126,6 @@
             <div class="timeline__item reveal">
               <div class="timeline__dot"></div>
               <div class="timeline__card">
-                <div class="timeline__date">2025 – Present</div>
-                <div class="timeline__company">California Institute of Technology</div>
-                <div class="timeline__role">Teaching Assistant</div>
-              </div>
-            </div>
-
-            <div class="timeline__item reveal">
-              <div class="timeline__dot"></div>
-              <div class="timeline__card">
                 <div class="timeline__date">2024 – Present</div>
                 <div class="timeline__company">PARSEC Rocketry Club</div>
                 <div class="timeline__role">GNC Subteam Lead — Leading guidance, navigation &amp; control development for student rocketry</div>
@@ -135,7 +136,7 @@
               <div class="timeline__dot"></div>
               <div class="timeline__card">
                 <div class="timeline__date">2024</div>
-                <div class="timeline__company">VERTIV</div>
+                <div class="timeline__company">VERTIV - Advanced Technologies Development</div>
                 <div class="timeline__role">Mechanical Engineering Intern</div>
               </div>
             </div>
@@ -165,11 +166,11 @@
 
       <div class="projects-grid">
 
-        <a href="projects/chopper.html" class="card reveal" data-category="controls">
-          <img class="card__cover" src="assets/projects/chopper/WhatsApp_Image_2025-10-01_at_7.41.45_PM.jpeg" alt="CHOPPER" />
+        <a href="projects/cds235.html" class="card reveal" data-category="controls robotics">
+          <img class="card__cover" src="assets/projects/cds235/dashboard.png" alt="Robot Arm Teleoperation Dashboard" />
           <div class="card__body">
-            <span class="card__tag">NASA JPL · 2025</span>
-            <div class="card__title">CHOPPER Rotor Interaction Characterization</div>
+            <span class="card__tag">Caltech · CDS 235 · 2026</span>
+            <div class="card__title">CDS 235 — Robot Arm Teleoperation via Smartphone</div>
             <div class="card__arrow">View project →</div>
           </div>
         </a>
@@ -183,38 +184,11 @@
           </div>
         </a>
 
-        <a href="projects/cds235.html" class="card reveal" data-category="controls robotics">
-          <img class="card__cover" src="assets/projects/cds235/dashboard.png" alt="Robot Arm Teleoperation Dashboard" />
-          <div class="card__body">
-            <span class="card__tag">Caltech · CDS 235 · 2026</span>
-            <div class="card__title">CDS 235 — Robot Arm Teleoperation via Smartphone</div>
-            <div class="card__arrow">View project →</div>
-          </div>
-        </a>
-
         <a href="projects/me134.html" class="card reveal" data-category="controls robotics">
           <img class="card__cover" src="assets/ME%20134%20Report/imgs/unused/1.JPG" alt="Block Assembler Robot" />
           <div class="card__body">
             <span class="card__tag">Caltech · ME 134 · 2026</span>
             <div class="card__title">ME 134 — Block Assembler Robot</div>
-            <div class="card__arrow">View project →</div>
-          </div>
-        </a>
-
-        <a href="projects/ae103a.html" class="card reveal" data-category="controls">
-          <img class="card__cover" src="assets/projects/ae103a/image.png" alt="CubeSat ADCS" />
-          <div class="card__body">
-            <span class="card__tag">Caltech</span>
-            <div class="card__title">Ae 103a — CubeSat ADCS</div>
-            <div class="card__arrow">View project →</div>
-          </div>
-        </a>
-
-        <a href="projects/ae103b.html" class="card reveal" data-category="controls">
-          <img class="card__cover" src="assets/projects/ae103b/image.png" alt="Drone Trajectory" />
-          <div class="card__body">
-            <span class="card__tag">Caltech</span>
-            <div class="card__title">Ae 103b — Drone Trajectory Planning</div>
             <div class="card__arrow">View project →</div>
           </div>
         </a>
@@ -237,6 +211,33 @@
           </div>
         </a>
 
+        <a href="projects/chopper.html" class="card reveal" data-category="controls">
+          <img class="card__cover" src="assets/projects/chopper/WhatsApp_Image_2025-10-01_at_7.41.45_PM.jpeg" alt="CHOPPER" />
+          <div class="card__body">
+            <span class="card__tag">NASA JPL · 2025</span>
+            <div class="card__title">JPL Internship - CHOPPER Rotor Interaction Characterization</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/ae103a.html" class="card reveal" data-category="controls">
+          <img class="card__cover" src="assets/projects/ae103a/image.png" alt="CubeSat ADCS" />
+          <div class="card__body">
+            <span class="card__tag">Caltech</span>
+            <div class="card__title">Ae 103a — CubeSat ADCS</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
+        <a href="projects/ae103b.html" class="card reveal" data-category="controls">
+          <img class="card__cover" src="assets/projects/ae103b/image.png" alt="Drone Trajectory" />
+          <div class="card__body">
+            <span class="card__tag">Caltech</span>
+            <div class="card__title">Ae 103b — Drone Trajectory Planning</div>
+            <div class="card__arrow">View project →</div>
+          </div>
+        </a>
+
         <a href="projects/me8.html" class="card reveal" data-category="robotics controls">
           <img class="card__cover" src="assets/projects/me8/image.png" alt="Gimbal" />
           <div class="card__body">
@@ -250,7 +251,7 @@
           <img class="card__cover" src="assets/projects/surf/image.png" alt="SURF" />
           <div class="card__body">
             <span class="card__tag">Caltech — Gharib Lab</span>
-            <div class="card__title">Summer Undergraduate Research Fellow</div>
+            <div class="card__title">SURF - Vortex Formation Dynamics</div>
             <div class="card__arrow">View project →</div>
           </div>
         </a>
@@ -473,6 +474,7 @@
     </div>
   </footer>
 
+  <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

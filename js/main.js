@@ -72,6 +72,16 @@ document.querySelectorAll('.accordion__header').forEach(header => {
 });
 
 /* ============================================================
+   MASONRY GRID
+   ============================================================ */
+const msnry = new Masonry('.projects-grid', {
+  itemSelector: '.card:not(.hidden)',
+  columnWidth: 300,
+  gutter: 24,
+  fitWidth: true,
+});
+
+/* ============================================================
    PROJECT TAB FILTER
    ============================================================ */
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -89,6 +99,10 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         card.classList.toggle('hidden', !cats.includes(filter));
       }
     });
+
+    msnry.options.itemSelector = '.card:not(.hidden)';
+    msnry.reloadItems();
+    msnry.layout();
   });
 });
 

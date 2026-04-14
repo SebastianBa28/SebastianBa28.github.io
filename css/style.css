@@ -366,6 +366,45 @@ section:nth-child(even) { background-color: var(--color-surface); }
 }
 .about__bio p:last-child { margin-bottom: 0; }
 
+.about__bio-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.about__bio-row p {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.about__photo {
+  flex-shrink: 0;
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 2px solid rgba(249,115,22,.4);
+  box-shadow: 0 0 0 4px rgba(249,115,22,.08), var(--shadow-sm);
+}
+
+.about__photo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.about__photo--full {
+  height: auto;
+}
+
+.about__photo--full img {
+  height: auto;
+  object-fit: unset;
+}
+
 .about__facts {
   flex-shrink: 0;
   width: 280px;
@@ -377,7 +416,7 @@ section:nth-child(even) { background-color: var(--color-surface); }
 }
 
 .about__experience {
-  flex: 1;
+  flex: 0 0 38%;
   min-width: 0;
 }
 
@@ -526,9 +565,7 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
    PROJECTS GRID
    ============================================================ */
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
+  margin: 0 auto;
 }
 
 .card {
@@ -541,6 +578,8 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   transition: transform .2s, box-shadow .2s, border-color .2s;
   text-decoration: none;
   color: inherit;
+  width: 300px;
+  margin-bottom: 24px;
 }
 
 .card:hover {
@@ -618,7 +657,6 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
 }
 
 .card__tag {
@@ -1043,6 +1081,29 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   width: 100%;
   display: block;
   max-height: 480px;
+}
+
+.video-pair {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+}
+.video-pair .video-wrap {
+  flex: 1;
+  margin: 0;
+}
+.video-wrap--cropped {
+  height: 680px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.video-wrap--cropped video {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  flex-shrink: 0;
 }
 
 .yt-embed {
