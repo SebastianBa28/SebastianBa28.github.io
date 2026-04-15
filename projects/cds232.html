@@ -43,8 +43,8 @@
 
       <!-- SYSTEM MODEL -->
       <h2>System Model</h2>
-      <div style="display:flex; align-items:center; gap:40px; margin:24px 0;">
-        <div style="flex:1; min-width:0; width:50%;">
+      <div class="proj-row proj-row--center">
+        <div style="flex:1; min-width:0;">
           <p style="margin-bottom:12px;">
             The planar drone is modeled as a rigid body with two independent thrust inputs
             <em>u</em><sub>1</sub> and <em>u</em><sub>2</sub> separated by moment arm <em>r</em>.
@@ -61,14 +61,14 @@
             \[\mathbf{x} = \bigl[\,x,\;\dot{x},\;y,\;\dot{y},\;\theta,\;\dot{\theta}\,\bigr]^\top \in \mathbb{R}^6\]
           </div>
         </div>
-        <div style="flex:1; min-width:0; width:50%;">
+        <div style="flex:1; min-width:0;">
           <img src="../assets/CDS%20232%20Report/figures/cp1/quadrotor2d.svg" alt="3-DOF planar quadrotor diagram" style="width:100%; height:auto;" />
         </div>
       </div>
 
       <!-- TRAJECTORY TRACKING CONTROLLER -->
       <h2>Trajectory Tracking Controller</h2>
-      <div style="display:flex; align-items:center; gap:40px; margin:20px 0;">
+      <div class="proj-row proj-row--center">
         <div style="flex:1;">
           <h3 style="color:var(--color-accent); margin-bottom:12px;">Trajectory Generation</h3>
           <p style="margin:0;">
@@ -78,7 +78,7 @@
           Below we derive and implement a baseline linear controller to track the desired trajectory.
         </p>
         </div>
-        <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:580px;">
+        <div class="proj-img-sidebar">
           <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTraj.png" alt="Spatial trajectory" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
           <img src="../assets/CDS%20232%20Report/figures/cp1/trajComponents.png" alt="X and Y trajectory components" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
           <img src="../assets/CDS%20232%20Report/figures/cp1/orientation.png" alt="Orientation profile θ(t)" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
@@ -87,7 +87,7 @@
       </div>
 
       <h3>Linearization &amp; LQR Design</h3>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+      <div class="proj-row proj-row--center">
         <div style="flex:1; min-width:0;">
           <p style="margin-bottom:12px;">Defining the tracking error \(e = \mathbf{x} - \mathbf{x}_\text{ref}\) and control error \(u_e = u - u_\text{ref}\), we linearize the system dynamics about the reference trajectory:</p>
           <div class="math-display" style="margin:0;">
@@ -103,7 +103,7 @@
             \[K = \operatorname{lqr}(A,\,B,\,Q,\,R)\]
           </div>
         </div>
-        <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:580px;">
+        <div class="proj-img-sidebar">
           <img src="../assets/CDS%20232%20Report/figures/cp1/sampleTracking.png" alt="Trajectory tracking" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
           <img src="../assets/CDS%20232%20Report/figures/cp1/trackingError.png" alt="Tracking error" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         </div>
@@ -121,7 +121,7 @@
       </p>
 
       <h3>Formulation</h3>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+      <div class="proj-row proj-row--center">
         <div style="flex:1; min-width:0;">
           <p style="margin-bottom:8px;">Consider the barrier function candidate \(h(\mathbf{x})\) as the distance to the obstacle boundary</p>
           <div class="math-display" style="margin:0 0 12px;">
@@ -140,7 +140,7 @@
             \[u^* = \underset{u}{\operatorname{arg\,min}}\;\tfrac{1}{2}\|u - u_\text{nom}\|^2 \quad \text{subject to CBF constraint}\]
           </div>
         </div>
-        <div style="flex-shrink:0; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:580px;">
+        <div class="proj-img-sidebar">
           <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0.png" alt="CBF trajectory — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
           <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier0Error.png" alt="Tracking error — γ₀" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         </div>
@@ -150,7 +150,7 @@
       <p>
         Applying the CBF-QP controller to a more complex trajectory we obserse the following performance
       </p>
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:20px 0;">
+      <div class="proj-img-grid-3">
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1.png" alt="CBF trajectory — γ₁" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier1Error.png" alt="Tracking error — γ₁" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Control1.png" alt="Control inputs — low tracking cost" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
@@ -160,7 +160,7 @@
         Note that in the controller falls behind on the trajectory to go around the obstacle, but quickly recovers to track the reference path with minimal error. 
         Increasing the state cost in the LQR formulation results in a tighter tracking performance, but at the cost of more aggressive control inputs.
       </p>
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:20px 0;">
+      <div class="proj-img-grid-3">
         <img src="../assets/CDS%20232%20Report/figures/cp4/Barrier2.png" alt="CBF trajectory — γ₂" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/BarrierError2.png" alt="Tracking error — γ₂" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
         <img src="../assets/CDS%20232%20Report/figures/cp4/Control2.png" alt="Control inputs — high tracking cost" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />

@@ -1382,6 +1382,46 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
 }
 
 /* ============================================================
+   PROJECT PAGE UTILITY CLASSES
+   ============================================================ */
+
+/* Two-column flex rows used in project pages */
+.proj-row {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  margin: 20px 0;
+}
+.proj-row--center  { align-items: center; }
+.proj-row--stretch { align-items: stretch; }
+.proj-row__col        { flex: 1;   min-width: 0; }
+.proj-row__col--wide  { flex: 1.6; min-width: 0; }
+.proj-row__col--wider { flex: 1.8; min-width: 0; }
+
+/* Fixed-column inline image grids */
+.proj-img-grid-2 { display: grid; grid-template-columns: 1fr 1fr;     gap: 10px; margin: 10px 0; }
+.proj-img-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 20px 0; }
+
+/* Photo strip: 0.5fr 1fr 0.5fr (used in cds235) — replaces fixed height:300px */
+.proj-img-strip { display: grid; grid-template-columns: 0.5fr 1fr 0.5fr; gap: 10px; margin-top: 24px; }
+.proj-img-strip img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  aspect-ratio: 4/3;
+}
+
+/* Fixed-width sidebar image grid (used in cds232) */
+.proj-img-sidebar {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 580px;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 900px) {
@@ -1426,6 +1466,46 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   .skills-row { grid-template-columns: 160px 1fr; gap: 20px; }
   .img-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
+
+  /* PDF embed — reduce from fixed 780px */
+  .pdf-embed__frame { height: min(500px, 70vh); }
+
+  /* Video pairs — stack vertically */
+  .video-pair { flex-direction: column; }
+
+  /* Masonry grid + cards — override JS-set inline widths */
+  .projects-grid { width: 100% !important; }
+  .card { width: 100% !important; margin-bottom: 16px; }
+}
+
+@media (max-width: 640px) {
+  /* Stack all project flex rows into single column */
+  .proj-row,
+  .proj-row.proj-row--center,
+  .proj-row.proj-row--stretch {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .proj-row__col,
+  .proj-row__col--wide,
+  .proj-row__col--wider {
+    flex: unset;
+    width: 100%;
+  }
+
+  /* Collapse fixed-column image grids */
+  .proj-img-grid-2,
+  .proj-img-grid-3,
+  .proj-img-strip {
+    grid-template-columns: 1fr;
+  }
+
+  /* cds232 sidebar grid — go full width */
+  .proj-img-sidebar {
+    width: 100%;
+    flex-shrink: 1;
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 480px) {

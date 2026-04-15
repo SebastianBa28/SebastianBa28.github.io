@@ -74,11 +74,31 @@ document.querySelectorAll('.accordion__header').forEach(header => {
 /* ============================================================
    MASONRY GRID
    ============================================================ */
+function getMasonryColumnWidth() {
+  const grid = document.querySelector('.projects-grid');
+  if (!grid) return 300;
+  const containerWidth = grid.parentElement.offsetWidth - 48;
+  if (containerWidth < 380) return containerWidth;
+  if (containerWidth < 700) return Math.floor((containerWidth - 24) / 2);
+  return 300;
+}
+
 const msnry = new Masonry('.projects-grid', {
   itemSelector: '.card:not(.hidden)',
-  columnWidth: 300,
+  columnWidth: getMasonryColumnWidth(),
   gutter: 24,
   fitWidth: true,
+});
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const newWidth = getMasonryColumnWidth();
+    document.querySelectorAll('.card:not(.hidden)').forEach(c => { c.style.width = newWidth + 'px'; });
+    msnry.options.columnWidth = newWidth;
+    msnry.layout();
+  }, 150);
 });
 
 /* ============================================================

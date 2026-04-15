@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <div style="display:flex; gap:40px; align-items:flex-start; margin:20px 0;">
+      <div class="proj-row">
         <div style="flex:1; min-width:0;">
           <h2 style="margin-top:0;">Motivation</h2>
           <p>
@@ -109,10 +109,10 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:0.5fr 1fr 0.5fr; gap:10px; margin-top:24px;">
-        <img src="../assets/projects/cds235/phone_1.jpg" alt="iOS App" style="width:100%; height:300px; object-fit:cover; object-position:center top; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-        <img src="../assets/projects/cds235/dashboard.png" alt="Live telemetry debug dashboard" style="width:100%; height:300px; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-        <img src="../assets/projects/cds235/rviz_1.png" alt="ROS 2 Kinematics Node in RViz" style="width:100%; height:300px; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+      <div class="proj-img-strip">
+        <img src="../assets/projects/cds235/phone_1.jpg" alt="iOS App" style="object-position:center top;" />
+        <img src="../assets/projects/cds235/dashboard.png" alt="Live telemetry debug dashboard" />
+        <img src="../assets/projects/cds235/rviz_1.png" alt="ROS 2 Kinematics Node in RViz" />
       </div>
 
       <!-- POSE ESTIMATION -->
@@ -124,7 +124,7 @@
       </p>
 
       <h3 style="color:var(--color-accent); margin-bottom:12px;">IMU Propagation</h3>
-      <div style="display:flex; align-items:flex-start; gap:40px; margin:16px 0;">
+      <div class="proj-row">
         <div style="flex:1; min-width:0;">
           <p style="margin-bottom:8px;">The IMU provides accelerometer readings \(\mathbf{a}_b\) and gyroscope readings \(\boldsymbol{\omega}_b\) at ~100–1000 Hz. The state is propagated by integration:</p>
           <div class="math-display" style="margin:0 0 12px;">
@@ -152,7 +152,7 @@
       <h2>Control Modes</h2>
 
       <h3>Velocity Mode</h3>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+      <div class="proj-row proj-row--center">
         <div style="flex:1; min-width:0;">
           <p style="margin-bottom:8px;">The phone's instantaneous twist \(\dot{\mathbf{x}} = [\mathbf{v}^\top,\, \boldsymbol{\omega}^\top]^\top\) is mapped to joint velocities via the <strong>damped least-squares (DLS) pseudoinverse</strong> of the UR10e's geometric Jacobian:</p>
           <div class="math-display" style="margin:0 0 12px;">
@@ -176,7 +176,7 @@
       </div>
 
       <h3>Position Mode</h3>
-      <div style="display:flex; align-items:center; gap:40px; margin:16px 0;">
+      <div class="proj-row proj-row--center">
         <div style="flex:1; min-width:0;">
           <p style="margin-bottom:8px;">The phone's displacement from a saved reference pose is interpreted as a desired end-effector target via the relative transform:</p>
           <div class="math-display" style="margin:0 0 12px;">
@@ -203,9 +203,9 @@
         and re-references the phone pose on demand.
       </p>
 
-      <div style="display:flex; gap:10px; margin:20px 0; align-items:flex-start; justify-content:center;">
-        <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="height:280px; width:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
-        <img src="../assets/projects/cds235/reset.png" alt="Reset behavior joint trajectories" style="height:280px; width:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+      <div class="proj-img-grid-2" style="margin:20px 0;">
+        <img src="../assets/projects/cds235/rviz_2.png" alt="UR10e simulation result" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
+        <img src="../assets/projects/cds235/reset.png" alt="Reset behavior joint trajectories" style="width:100%; height:auto; border-radius:var(--radius-md); border:1px solid var(--color-border);" />
       </div>
 
       <!-- SHORTCOMINGS -->
