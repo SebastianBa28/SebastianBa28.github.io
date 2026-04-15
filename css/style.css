@@ -1479,6 +1479,15 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
 }
 
 @media (max-width: 640px) {
+  /* About section — stack bio rows and make photos full-width */
+  .about__bio-row {
+    flex-direction: column;
+  }
+  .about__photo {
+    width: 100%;
+    height: auto;
+  }
+
   /* Stack all project flex rows into single column */
   .proj-row,
   .proj-row.proj-row--center,
