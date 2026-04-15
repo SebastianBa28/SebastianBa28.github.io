@@ -381,8 +381,8 @@ section:nth-child(even) { background-color: var(--color-surface); }
 
 .about__photo {
   flex-shrink: 0;
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 2px solid rgba(249,115,22,.4);
@@ -692,28 +692,38 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
 /* ============================================================
    SKILLS
    ============================================================ */
-.skills-grid {
+.skills-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.skills-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: 200px 1fr;
+  gap: 32px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+  align-items: baseline;
 }
 
-.skill-group {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-accent);
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
+.skills-row:first-child {
+  border-top: 1px solid var(--color-border);
 }
 
-.skill-group__title {
+.skills-row__label {
   font-family: var(--font-mono);
   font-size: .7rem;
   font-weight: 700;
-  letter-spacing: .1em;
+  letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--color-accent);
-  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.skills-row__items {
+  font-size: .9rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
 }
 
 .tags {
@@ -1413,13 +1423,13 @@ section:nth-child(even) .timeline__dot { border-color: var(--color-surface); }
   .card--featured .card__cover { width: 100%; height: auto; }
 
   .projects-grid { grid-template-columns: 1fr; }
-  .skills-grid { grid-template-columns: repeat(2, 1fr); }
+  .skills-row { grid-template-columns: 160px 1fr; gap: 20px; }
   .img-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-  .skills-grid { grid-template-columns: 1fr; }
+  .skills-row { grid-template-columns: 1fr; gap: 4px; }
   .hero__name { font-size: 2.2rem; }
   .hero__stats { max-width: 100%; }
   .hero__stat { min-width: 80px; padding: 10px 12px; }
