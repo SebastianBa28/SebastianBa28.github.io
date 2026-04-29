@@ -1,0 +1,144 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{fontawesome}
+\usepackage{setspace}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\sloppy
+\renewcommand\labelitemi{--}
+
+\pagenumbering{gobble}
+
+% Formatting for section titles
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}[runin]{\bfseries}{}{0em}{}[:]
+
+%-------------------------------------------------------------
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{Sebastian Banuelos}}\\[4pt]
+    Pasadena, CA \quad | \quad 
+    \href{mailto:sbanuelo@caltech.edu}{sbanuelo@caltech.edu} \quad | \quad 
+    +1 915-843-9030 \quad | \quad \href{https://sebastianba28.github.io}{Project Portfolio}
+\end{center}
+
+%-------------------------------------------------------------
+\section*{Education}
+\textbf{California Institute of Technology} \hfill Pasadena, CA\\
+\textit{BS in Mechanical Engineering} \hfill \textbf{Graduation: Jun 2026}\\
+\textit{Minor in Control \& Dynamical Systems} \hfill \textbf{GPA: 4.0  /4.0}
+
+%-------------------------------------------------------------
+\section*{Relevant Coursework}
+Feedback Control Systems \textbar{} Aerospace Control Systems \textbar{} Optimal Control  \& Estimation \\
+Robotic Manipulation and Planning \textbar{} Nonlinear Dynamics \& Control \textbar{} 
+Orbital Mechanics
+
+%-------------------------------------------------------------
+\section*{Teaching Experience}
+\noindent\textbf{Teaching Assistant \textbar \, Caltech} \hfill Pasadena, CA
+
+\noindent AE 103 (Graduate) - Aerospace Control Systems \hfill Sep 2025 - Present
+
+\noindent ME 012 (Undergraduate) - Rigid Body Dynamics \& Vibrations \hfill Mar 2025 - Jun 2025
+
+%-------------------------------------------------------------
+\section*{Research Experience}
+
+\textbf{Burdick Research Group \textbar{} Caltech} \hfill Pasadena, CA\\
+\textit{Undergraduate Researcher} \hfill Sep 2025 -- Present
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Development time-optimal Model Predictive Control architectures for autonomous drone racing.
+\end{itemize}
+
+\noindent\textbf{Jet Propulsion Laboratory \textbar{} NASA} \hfill Pasadena, CA\\
+\textit{GNC Intern} \hfill Jun 2025 -- Sept 2025
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Led experimental study of rotor aerodynamics for CHOPPER, the next-generation Mars Helicopter.
+    \item Developed an underwater experiment designed to preserve flow properties under Martian flight regimes.
+    \item Characterized rotor–rotor interaction effects on thrust generation and flight dynamics, identifying up to 25\% thrust reduction in adverse flight conditions.
+    \item Generated an interference database of 100+ flight configurations for controller design and validation.
+\end{itemize}
+
+\noindent\textbf{PARSEC Rocketry Team \textbar{} Caltech} \hfill Pasadena, CA\\
+\textit{GNC Engineer} \hfill Aug 2024 -- Present
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Development of self-landing rocket integrating TVC for attitude control and cold-gas RCS for roll authority.
+    \item Led development of flight simulator in SIMULINK along with the implementation of a trajectory tracking controller.
+    \item Performed grey-box system identification to model engine dynamics from experimental thrust data.
+\end{itemize}
+
+\noindent\textbf{Advanced Technologies Development \textbar{} Vertiv} \hfill Columbus, OH\\
+\textit{Mechanical Engineering Intern} \hfill Jun 2024 -- Sept 2024
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Formulated innovative condenser designs for ARPA-E initiative on ultra-efficient hybrid cooling, integrating direct-to-chip and immersion cooling for NVIDIA supercomputing clusters.
+    \item Developed CFD models of condenser array configurations using ANSYS Fluent to assess performance.
+    \item Finalized a condenser array concept with 23\% increased heat rejection and 13\% higher efficiency than industry standards, optimizing for minimal recirculation and coil uniformity.
+\end{itemize}
+
+\noindent\textbf{Gharib Research Group \textbar{} Caltech} \hfill Pasadena, CA \\
+\textit{Summer Undegraduate Research Fellowship} \hfill Jun 2023 -- Sept 2023
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt]
+    \item Led experimental study of vortex formation times across perforated plates for informed design optimization of flapping micro-aerial vehicles.
+    \item Performed dye visualization and particle image velocimetry to characterize vortex formation dynamics.
+\end{itemize}
+
+%-------------------------------------------------------------
+\section*{Relevant Projects}
+
+\textbf{Robot Arm Teleoperation via Smartphone \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Developed real-time teleoperation system for a UR10e 6-DOF manipulator using an iPhone as a spatial controller via Apple's ARKit visual-inertial odometry. Implemented velocity mode using resolved-rate Jacobian control with adaptive singularity-avoiding damping, and position mode via closed-form analytical inverse kinematics. Built on ROS 2 Jazzy achieving end-to-end latency under 100 ms.
+\end{itemize}
+
+\noindent\textbf{Planar Drone: Dynamics \& Control \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Performed full nonlinear analysis of a 3-DOF planar quadrotor and designed an LQR trajectory-tracking controller via time-varying linearization about minimum-snap reference trajectories. Extended the system with Control Barrier Functions (CBF) to guarantee real-time obstacle avoidance via quadratic programming.
+\end{itemize}
+
+\noindent\textbf{Block Assembler Robot \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Developed autonomous robot that builds user-specified 3D magnetic block structures on a 6$\times$6 grid using a 5-DOF HEBI arm and ROS 2 architecture. Implemented a state-invariant perception-plan-act pipeline with Bayesian voxel occupancy mapping and DBSCAN-based block detection, robust to arbitrary user interference. Built an AI design agent using Gemini 2.5 Flash to generate validated JSON assembly plans from natural language.
+\end{itemize}
+
+\noindent\textbf{Quadcopter Trajectory Planner \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Developed drone navigation system featuring minimum-snap trajectory generation formulated as a quadratic programming problem. Derived 6-DOF nonlinear dynamics and implemented PID controller for attitude and position control. Integrated full system in SIMULINK, validating waypoint tracking, disturbance rejection under wind gusts, and performance tradeoffs between trajectory aggressiveness and tracking error.
+\end{itemize}
+
+\noindent\textbf{CubeSat ADCS \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Developed Attitude Determination
+    and Control System for CubeSats using Reaction Wheels. Derived system dynamics using quaternion kinematics. Designed Kalman Filter for state estimation and LQR Controller for pointing correction. Implemented overall system in SIMULINK to test the robustness of the controller against unmodeled disturbances.
+\end{itemize}
+
+\noindent\textbf{RobotHockey Games \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Designed and manufactured a tele-operated robot for the RoboHockey Games. Developed MATLAB script to simulate drivetrain performance ensuring acceleration, maneuverability, and traction requirements. Engineered a turret-style shooter and roller intake system for reliable puck handling and rapid-fire capability. Implemented an odometry-based localization algorithm to enable automated targeting and shooting.
+\end{itemize}
+
+\noindent\textbf{Baseball Kinematics \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Designed inverse-kinematics planner for Atlas humanoid robot to hit a baseball. Defined augmented kinematic chains and its corresponding Jacobian. Computed incoming ball trajectory and solved for the desired bat intercepting trajectory in task-space. Solved inverse kinematics, leveraging null-space projection for secondary tasks to enforce kinematic constraints. Implemented full simulation on RViz using custom physics modules.
+\end{itemize}
+
+\noindent\textbf{Mechanical Transmission \textbar{} Caltech}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt]
+    \item Designed a two-speed mechanical transmission, optimized to achieve balanced acceleration and velocity profiles. Implemented an alternating roller-clutch bearing mechanism to shift gears. Developed a MATLAB script to simulate motor dynamics and assess the performance of the transmission for a given gear ratio. Performed Von Misses stress analysis and load calculations on critical components. 
+\end{itemize}
+
+%-------------------------------------------------------------
+\section*{Awards}
+\noindent\textbf{QuestBridge National College Match}
+\begin{itemize}[leftmargin=1.2em, itemsep=0.2pt, topsep=0.4pt, after=\vspace{4pt}]
+    \item Full-ride scholarship to Caltech
+\end{itemize}
+
+\end{document}
